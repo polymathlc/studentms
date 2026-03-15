@@ -444,6 +444,11 @@ online,Lim Shi Qi,Ely Eng,93382733,shanicelim1134@gmail.com,P5,,Saturday,1633.92
                         <option value="Package">Package (Yes)</option>
                         <option value="Non-Package">Monthly (No)</option>
                     </select>
+                    <select id="modeFilter" class="p-2 bg-gray-50 border border-gray-200 rounded-md text-sm w-40" onchange="renderTable()">
+                        <option value="All">All Modes</option>
+                        <option value="Online">Online</option>
+                        <option value="Physical">Physical</option>
+                    </select>
                     <select id="trialFilter" class="p-2 bg-gray-50 border border-gray-200 rounded-md text-sm w-40" onchange="renderTable()">
                         <option value="All">All Trial Status</option>
                         <option value="Trial">Trial (Yes)</option>
@@ -493,6 +498,9 @@ online,Lim Shi Qi,Ely Eng,93382733,shanicelim1134@gmail.com,P5,,Saturday,1633.92
                                 </th>
                                 <th class="p-4 w-48 bg-gray-50">
                                     <div class="sort-button" onclick="sortTable('parentName')">Parent Details<i data-lucide="chevrons-up-down" class="w-4 h-4 text-gray-400"></i></div>
+                                </th>
+                                <th class="p-4 w-28 bg-gray-50">
+                                    <div class="sort-button" onclick="sortTable('mode')">Mode<i data-lucide="chevrons-up-down" class="w-4 h-4 text-gray-400"></i></div>
                                 </th>
                                 <th class="p-4 bg-gray-50">
                                     <div class="flex gap-2">
@@ -2007,6 +2015,7 @@ online,Lim Shi Qi,Ely Eng,93382733,shanicelim1134@gmail.com,P5,,Saturday,1633.92
             const worksheetFilter = document.getElementById('worksheetFilter').value;
             const dayFilter = document.getElementById('dayFilter').value;
             const packageFilter = document.getElementById('packageFilter').value;
+            const modeFilter = document.getElementById('modeFilter').value;
             const trialFilter = document.getElementById('trialFilter').value; 
             
             tbody.innerHTML = '';
@@ -2038,6 +2047,9 @@ online,Lim Shi Qi,Ely Eng,93382733,shanicelim1134@gmail.com,P5,,Saturday,1633.92
             }
             if (packageFilter !== 'All') {
                 addBadge('Type', packageFilter, 'bg-yellow-100 text-yellow-700');
+            }
+            if (modeFilter !== 'All') {
+                addBadge('Mode', modeFilter, 'bg-indigo-100 text-indigo-700');
             }
             if (trialFilter !== 'All') {
                 addBadge('Trial', trialFilter, 'bg-red-100 text-red-700');
@@ -2091,6 +2103,14 @@ online,Lim Shi Qi,Ely Eng,93382733,shanicelim1134@gmail.com,P5,,Saturday,1633.92
                 let packageMatch = true;
                 if(packageFilter === 'Package') packageMatch = f.isPackage === true;
                 if(packageFilter === 'Non-Package') packageMatch = !f.isPackage;
+                
+                let modeMatch = true;
+                if(modeFilter !== 'All') {
+                    // Check if *any* child has a subject matching the filter (Online or Physical)
+                    modeMatch = f.children.some(c => 
+                        (c.subjects || []).some(s => s.mode.toLowerCase() === modeFilter.toLowerCase())
+                    );
+                }
 
                 let trialMatch = true; 
                 if(trialFilter === 'Trial') trialMatch = f.isTrial === true;
@@ -2123,7 +2143,7 @@ online,Lim Shi Qi,Ely Eng,93382733,shanicelim1134@gmail.com,P5,,Saturday,1633.92
                     });
                 }
 
-                return searchMatch && statusMatch && invoiceMatch && levelMatch && subjectMatch && worksheetMatch && dayMatch && packageMatch && trialMatch;
+                return searchMatch && statusMatch && invoiceMatch && levelMatch && subjectMatch && worksheetMatch && dayMatch && packageMatch && modeMatch && trialMatch;
             });
             
             // 2. Sort Data (unchanged)
@@ -2142,6 +2162,10 @@ online,Lim Shi Qi,Ely Eng,93382733,shanicelim1134@gmail.com,P5,,Saturday,1633.92
                     case 'day':
                         valA = a.children.map(c => (c.subjects || []).map(s => s.timeDay || '').join(', ')).join(', ').toLowerCase();
                         valB = b.children.map(c => (c.subjects || []).map(s => s.timeDay || '').join(', ')).join(', ').toLowerCase();
+                        break;
+                    case 'mode':
+                        valA = a.children.map(c => (c.subjects || []).map(s => s.mode || '').join(', ')).join(', ').toLowerCase();
+                        valB = b.children.map(c => (c.subjects || []).map(s => s.mode || '').join(', ')).join(', ').toLowerCase();
                         break;
                     case 'parentName':
                         valA = a.parentName.toLowerCase();
@@ -2270,6 +2294,15 @@ online,Lim Shi Qi,Ely Eng,93382733,shanicelim1134@gmail.com,P5,,Saturday,1633.92
                     <td class="p-4">
                         <div class="font-bold text-gray-900 text-base">${f.parentName}</div>
                         <div class="text-xs text-gray-400 font-medium uppercase mt-1 tracking-wide">${f.children.length} Student(s)</div>
+                    </td>
+                    <td class="p-4">
+                        <div class="flex flex-col gap-1">
+                            ${Array.from(new Set(f.children.flatMap(c => (c.subjects || []).map(s => s.mode)))).map(m => 
+                                m.toLowerCase() === 'online' 
+                                ? `<span class="px-2 py-1 bg-cyan-50 text-cyan-700 border border-cyan-200 rounded-md text-xs font-bold text-center w-full">ONLINE</span>`
+                                : `<span class="px-2 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-md text-xs font-bold text-center w-full">PHYSICAL</span>`
+                            ).join('')}
+                        </div>
                     </td>
                     <td class="p-4">
                         <div class="bg-white border border-gray-100 rounded-lg p-2 shadow-sm min-w-[250px]">
