@@ -1,0 +1,2767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tuition Manager - Account Management</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .modal { transition: opacity 0.25s ease; }
+        body.modal-active { overflow-y: hidden; }
+        .custom-scrollbar::-webkit-scrollbar { height: 8px; width: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .animate-slide-up { animation: slideUp 0.3s ease-out forwards; }
+        .sort-button { 
+            display: flex; 
+            align-items: center; 
+            gap: 4px; 
+            padding: 4px 8px; 
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            line-height: 1; 
+            text-align: left;
+        }
+        .sort-button:hover {
+            background-color: #e5e7eb;
+        }
+        /* Schedule Grid Styling (UPDATED) */
+        .schedule-grid {
+            display: grid;
+            /* Increased first column width from 80px to 120px */
+            grid-template-columns: 120px repeat(7, minmax(100px, 1fr));
+            gap: 1px;
+            background-color: #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #d1d5db;
+        }
+        /* Style for the Saturday table which only needs 2 columns */
+        .schedule-grid.saturday-grid {
+             grid-template-columns: 120px repeat(1, minmax(100px, 1fr));
+        }
+        .schedule-header, .schedule-cell {
+            padding: 8px;
+            /* Slightly increased font size for better readability */
+            font-size: 12px; 
+            font-weight: 600;
+            text-align: center;
+            background-color: #f9fafb;
+            color: #4b5563;
+        }
+        .schedule-header {
+            background-color: #eef2ff;
+            color: #4f46e5;
+            text-transform: uppercase;
+        }
+        .time-label {
+            background-color: #eef2ff;
+            color: #4f46e5;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            white-space: nowrap;
+            /* Increased font size for time slot text */
+            font-size: 13px; 
+            padding: 4px; /* Added padding to ensure text fits if wider */
+        }
+        .slot-content {
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.1s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 50px;
+            border: 1px solid transparent; /* Ensure border space is reserved */
+        }
+        .slot-content:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .slot-active {
+            border: 3px solid #f97316;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.5);
+        }
+        .slot-title { font-weight: bold; font-size: 12px; }
+        /* Adjusted the student count text to use dynamic colors but maintain contrast */
+        .slot-level { font-size: 10px; opacity: 0.8; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 h-screen flex flex-col">
+
+    <!-- CSV DATA TEMPLATES -->
+    <script id="csv-new-2026" type="text/template">Dec paid?,Expiry,no of subject,Online/Physical,Student Name,Parent,Contact number,Email address,Level,Math (Day),Science (Day),no of subject2,Fee,status 
+YES,paid for half month,1,Online,Charis Ngu Jin Yan,Koh Shir Li,91683978,Shirlykoh@gmail.com,P3,,Thursday,,,
+Jan paid,,1,Physical at Clementi,Sebastian Lin,Jasmine Tan,98362311,chiulee.tan@gmail.com,Sec 1,,Tuesday,,,
+2-Dec-25,paid one trial,1,Physical at Clementi,Tan Si Ying,Liang Chengmei,98378306,Tansiyingbcm@gmail.com,P5,,Tuesday,,,
+package,Sep-26,1,Online,Nathaniel Leong Si Yuen,Fanny Khng,91197197,fkhng2010@gmail.com,Primary 6,,Saturday,,,
+package,Mar-26,1,Online,Iva,Fanny Khng,91197197,fkhng2010@gmail.com,P4,,Saturday,,,
+trial,22-Oct,1,Physical at Clementi,Nicole Lee,Vivian Lim,98461505,lim.vivian1212@gmail.com,Primary 6,Wednesday,,,,
+12/3/25,paid for half month,2,Physical at Clementi,Jayden Tay Ching Yu,Karen Chew Suat Ling ,96891391,kchew1016@gmail.com,P4,Wednesday,Friday,,,
+12/3/25,paid for half month,2,Physical at Clementi,Jayen Tay Ching Xu ,Karen Chew Suat Ling,96891391,kchew1016@gmail.com,P4,Wednesday,Friday,,,
+12/1/25,paid for half month,1,Physical at Clementi,Tan Han En Matilda,Esther Kua ,94579705,estherkuatan@gmail.com,P4,Wednesday,,,,
+12/1/25,paid for half month,1,Online,Anas Muhammad Bin Norhisham,Masliza Bte Asri,93637204,Anasmuhammadnorhisham@gmail.com,Primary 6,,Thursday,,,
+12/1/25,paid for half month,1,Physical at Clementi,Anas Muhammad Bin Norhisham,Masliza Bte Asri,93637204,Anasmuhammadnorhisham@gmail.com,Primary 6,Friday,,,,
+12/5/25,paid for half month,1,Online,Aiken Chen Zhi Xiang,Tommy Budiharjo,93663683,tommybudiharjo@gmail.com,P4,,Friday,,,
+jan start,paid for jan,1,Physical at Clementi,Karl Goh,Lim Pey Ting,90025091,gnityep@gmail.com,Primary 6,Friday,,,,
+1/6/26,PAID TO UEN,2,Physical at Clementi,Tan Kai Feng,Jen Wei Ting,96550988,jenweiting@gmail.com,P5,Thursday,Tuesday,,,
+1/6/26,PAID TO UEN,1,Physical at Clementi,Tan Zhi Rui,Jen Wei Ting,96550988,jenweiting@gmail.com,P5,Thursday,,,,
+11/11/25,PAID TO UEN,1,Physical at Clementi,Yip Kai Li Kylie,Wong Fei Yoke,96209119,feywong9119@gmail.com,Primary 6,,Tuesday,,,
+yes,PAID TO UEN,1,Physical at Clementi,Netra Murugesan ,Megala Govindharaju ,98571404,Megal.murugesan@gmail.com,Primary 6,Wednesday,,,,
+yes,PAID TO UEN,1,Online,Netra Murugesan ,Megala Govindharaju ,98571404,Megal.murugesan@gmail.com,Primary 6,,Thursday,,,
+11/11/25,trial only,1,Physical at Balmoral Plaza,Leila Liena Ijuin ,Mitsuna Ijuin,96580183,Mitsunaijuin@gmail.com,Primary 6,Monday,,,,
+12/4/25,"trial, one subject each",2,Online,Chen Shangrui Darien,Chen Shuqiang,94791985,shuqiang85@gmail.com,Primary 6,Friday,Thursday,,,
+12/4/25,"trial, one subject each",2,Online,Chen Yun Rui Kayla Rae,Chen Shuqiang,94791985,shuqiang85@gmail.com,P5,Thursday,Saturday,,,
+12/1/25,2 trials,2,Physical,Jessica Chiu,Emily Ho JIA MIN,93686332,,P5,Wednesday,Tuesday,,,
+12/9/25,trial,1,Physical,,Ridwan,81027636,,Primary 6,,Tuesday,,,
+12/12/25,trial,1,Physical,,Ridwan,81027636,,P4,,Friday,,,
+12/8/25,trial only,1,Online,Shriyans Das,Dr Anumita Chaudhury,83603406,anumita7@gmail.com,P5,,Monday,,,
+11/12/25,one trial,1,Physical at Clementi,Ma Jia Ni,Sun Yan,92384096,accsunyan@gmail.com,Primary 6,,Wednesday,,,
+Package,Start jan,,online,miranda,Toh Sui Ying (7 oct) Du Sui Ying,97543371,suiying.toh@gmail.com,Sec 1,,Tuesday,1,
+Package,Start jan,,online,Matthiaws,Toh Sui Ying (7 oct) Du Sui Ying,97543371,suiying.toh@gmail.com,P5,,xx,1,
+2-Dec,trial only,,Online,Heidi Madeleine,Fong Ying Yi,97856876,Fong.ying.yi@gmail.com,Primary 6,,Tuesday,,,
+1/8/26,,,Online,Liew Shu Yun,Loy Yong De,96567626,Ysloyysloy@gmail.com,P5,Thursday,,,,
+paid for jan full month,,,Online,Tan Su Ling Serene ,Tan Lee Jin Shane ,94572064,serene.sl@gmail.com,P4,,Saturday,,,
+12/5/25,trial only,,Online,Chaewon Kwak,Alessandro Bernacchia ,90698075,chaewon.kk@gmail.com,Primary 6,Friday,,,,</script>
+
+    <script id="csv-old-batch" type="text/template">Nov and Dec paid?,Expiry/ Remark,no of subject,Online/Physical,Student Name,Parent,Contact number,Email address,Level,Math (Day),Science (Day),no of subject2,Fee,status 
+package,Oct-25,,Online,Rachel Ong,Sharon Lee,96586070,rachelongcy@gmail.com,P6,Wednesday,Saturday,1,60,paid
+will not continue after dec,Dec-25,,Online,Shirley Ngao Wee Ling,Triston Ng,92218510,shirleyngao@gmail.com,P6,,Saturday,1,27,paid
+yes,nov and dec paid,,Online,Eleanor Soh ,,82228070,annabellesg@gmail.com,P6,,Saturday,1,120,
+package,Sep-26,,Online,Wendy Ng,Maven Ong,93800063,missngwen@gmail.com,P6,Monday,Tuesday,1,,,
+package,Sep-26,,Online,Adriel Kingsman,Marilyn Susanto,86682298,Merilyn.susanto@gmail.com,P6,Monday (Physical),Saturday,2,120,
+package,Oct-25,,online,Du Wen Juan ,yuan jing tong,97913498,Yuanjingtong0826@gmail.com,P6,,Saturday,1,120,pay monthly
+yes,Oct to Dec paid,,online,Cui Jia (EBM),Qin zi xuan victor ,98625299,cuijiafirst@gmail.com,P6,Wednesday,,1,,,
+package,Dec-26,1,Online,Yi xuan,Lee Yee Cheng,97539101,yeecheng917@gmail.com,P5,Thursday,Saturday,2,,,
+package,Feb-26,,Online,Lim Shi Qi,Ely Eng,93382733,shanicelim1134@gmail.com,P5,,Saturday,1,,,
+yes. But lack of one subject price,nov and dec paid,,Physical,Velvet,Ooi Siau Fen,90257587,OOIFEN84@GMAIL.COM,P6,Wednesday,tUESDAY,2,,,
+package,Feb-26,,online,oh thiam leng sean,chace oh,96219195,thiamleng@gmail.com,P5,,Saturday,1,,,
+yes,nov and dec paid,,Online,Lynelle,Sophya lim lan Shii,80404810,imim25542@gmail.com,P6,,Saturday,1,,
+package,May-26,,Online,Zion Lim,Lydia Lee,91999434,zionlimze@gmail.com,P6,,Saturday,1,,,
+Jan continue,oct paid,,Physical,Haashini,Sundaramoorthy,90854668,anitha.smp@gmail.com,P5,Thursday,,1,,,
+yes,oct and nov and dec paid,,Online,Edrie xie (Xie Ying Wei),Doreen Tia,,frogrollercoaster@gmail.com,P6,,Tuesday,1,,,
+yes,nov and dec paid,,online,Cedric Ong Jun Siang,Tan Shy Woan,91252295,jouslyntsw@gmail.com,P6,Wednesday,Tuesday,2,,,
+package,Jan-27,,online,Diana Khoo,Dan Toh,98638255,iceteacubes@gmail.com,P5,,Saturday,1,,,
+wont continue,dec last month,wont continue ,Physical,Angelia Goh Pei Fang,Dylan Chen,97626999,chenw1155h@gmail.com,P6,,Tuesday,1,,,
+package,Nov-25,,Physical,evey,sally,94234109,"cuttlefish74@gmail.com, sparklecevey@gmail.com",P6,Wednesday,wEDNESDAY,2,,,
+wont continue,dec last month,wont continue ,Online,Ng Xin Hui,Choi Yoke Kiew,96348705,kiewkiew81@gmail.com,P6,,Saturday,1,,,
+package,Dec-25,,Physical,Kaius Lee,Adele Lim,97992010,adele.ltl@gmail.com,P6,,Tuesday,1,,,
+yes,nov and dec paid,,Physical,Kaius Lee,Adele Lim teng li,97992010,adele.ltl@gmail.com,P6,Monday,,1,,,
+package,Sep-26,,Online,Candace,Eva siew,97341329,candacezhou@gmail.com/ evasiewyx@gmail.com,P6,,Saturday,1,,,
+yes,Nov and Dec paid,,Online,Candace,Eva siew,97341329,candacezhou@gmail.com/ evasiewyx@gmail.com,P6,monday,,1,,,
+package,Dec-26,,Online,Jayven Lin zhi qiang,Tingyi,81680162,lzqsv82@gmail.com / ytingyi@gmail.com,P5,,Saturday,1,,,
+yes,Nov and Dec paid,,Online,Tan Yi xi,cASSIDY tAN,91911273,yixitan@gmail.com,P6,,Saturday,1,,,
+Package,Oct-25,1,online,xxx,Sharon Lee,96586070,rachelongcy@gmail.com,P4,,Friday,1,,,
+Nov only. Dec never pay,nov only. Dec not paid,,online,Akins Teo,Kath Lye Huay Yee (6 Oct),97482171,kathlyehy@gmail.com,P6,,Tuesday,1,,,
+yes,nov and dec paid,,Physical,Tristan ,Ng Fang ping,96300158,ng.fangping@gmail.com,P5,,Tuesday,1,,,
+package,Dec-26,,online,Kyra Goh,Joanne Lee,91289530,xdiamondthorpex@gmail.com,P5,Thursday,Saturday,2,,,
+yes,nov and dec paid,,Physical,Soumiyan,Thendral Suganya,96677703,pntts1415@gmail.com,P6,Wednesday,Tuesday,2,,,
+yes,paid for nov and dec too,,online,Frederick Seng (86860720),Hui Yan,98770720,huiyan.lhy@gmail.com,P4,,Friday,1,,,
+package,jan - Oct 2025,,online,Ghing Ghing,Zhen Yao,90231806,ghingghing.ling@gmail.com,P5,,Tuesday,1,,,
+Package,Jan to 1/12/2025,never pay for dec,Online,Bryan Tan (Gwen),Berwyn Tan,96935880,btxh888@gmail.com,P6,,Saturday,1,120,paid
+Nov only. Dec never pay,Jan continue,,Physical,Jude Tan,Jessy chua chen ling,81571107,jessychua@gmail.com,P5,,Tuesday,1,,,
+yes,Nov and Dec paid,,Physical,esmeralda,Shan Shan,97271173,shanshanrivas@gmail.com,P6,Wednesday,Wednesday,2,,,
+yes,paid for nov and dec too,,online,Tan Lee Soh Sonia,Tan Su Ling Serene,94572064,serene.sl@gmail.com,P6,,Saturday,1,,,
+yes,nov and dec paid,,physical,Meng yING XI,Ji Ling,91877023,yoyomuyu2017@gmail.com,P6,,Tuesday,1,,,
+yes,nov and dec paid. Jan onwards withdraw,,Online,Darius kong,Eunice Boo,97992931,cailingsgenie@gmail.com,P5,,Saturday,1,,,
+yes,nov and dec paid,,online,Faith Chandra,FENNY KUSUMA,91187821,Baby83doll@gmail.com,P4,,Friday,1,,,
+yes,nov and dec paid,,Online ,Qi Yi,Can wee,85694358,qiyi0606@gmail.com,P4,,Friday,1,,,
+yes,nov and dec paid,,online,Jace Cheng,Ng Li Hua Serene ,96827129,serenenlh25@gmail.com,P6,,Wednesday,1,,,
+yes,nov and dec paid,,Physical,Kelvin Koh hock siong,Jadon Koh,94313233,kelvinkohbh@gmail.com,P6,Wednesday,,1,,,
+yes,nov and dec paid,,Online,Kelvin Koh hock siong,Jadon Koh,94313233,kelvinkohbh@gmail.com,P6,,Saturday,1,,,
+yes,nov and dec paid,,Physical,Kelvin Koh hock siong,Flavia Koh,94313233,kelvinkohbh@gmail.com,P6,,Tuesday,1,,,
+package,Sep-26,,Online,Peck Lin (Bilin),Lionel Kwok,92706464,stuffian@gmail.com,P6,Monday,,1,,,
+,Oct paid,,Online,Zephyr keisho haraguchi,Yoshi,98754987,yoshihiro83@gmail.com,P6,,Saturday,1,,,
+yes,nov and dec paid,,online,Mario Lucas Ranti,Timothy ranti,97563764, jtmario@gmail.com,P6,,Saturday,1,,,
+yes,nov and dec paid,,Online,Jayden Koh,Mavis Poon,96287397,mavispoon1987@gmail.com,P5,Thursday,Saturday,2,,,
+yes,nov and dec paid,,Physical,Keith,Cherrie Yee Choon Yuong ,81011165,yeecherrie2025@gmail.com,P6,Wednesday,Wednesday,2,,,
+yes,"Paid for jan , Nov and Dec pause",always late payment,Online,Subramanian Devi,Krishanth,81354675,neebee200@gmail.com,P5,Thursday,,1,,,
+,Oct paid,,Physical,Venetia tAN,Kegan,97604764,tangcv30@gmail.com,P6,Wednesday,,1,,,
+yes,nov and dec paid,,Online,Michelle or Kelvin Teo Tsu We,Marc Teo,96251626,marcteojx@gmail.com,P6,,Tuesday,1,,,
+package,Dec-26,,Online,Ong Shi Theng Stephy,Ting Min XUAN oLIVIA,92375358,forolivia2015@gmail.com,P5,,tUESDAY,1,,,
+,Oct paid,,Online,Belinda Tan Poh Suan,Megan Yan,96963351,megan1234bel@gmail.com,P6,Wednesday,Saturday,2,,,
+,sept paid,,Online,Christina Lim Seow Yein,Charis,90602655,charislee165@gmail.com,P6,,Saturday,1,,,
+yes,oct till dec paid,,Online,Wong Ann Mei,Daniel Liu,97829179,annmei.wong@gmail.com,P6,,Saturday,1,,,
+yes,nov and dec paid,,online,Lim Chai Ling no whatsapp,Lincoln Lem,82820191,lemszeleong@gmail.com,P6,,Wednesday,1,,,
+yes,nov and dec paid,,Physical,Jia yi,Jordan ,96906936,Dearjiayikuo@gmail.com,P6,,Tuesday,1,,,
+yes,paid for nov and dec too,,Physical,Yvonne Yen Seetoh chin leong,Charlotte ,89041644,sunzhine3007@gmail.com; Seetohcharlotte@gmail.com,P5,Thursday,Tuesday,2,,,
+yes,paid for nov and dec too,,Online,Tay Choo Him,Chua zhen yu,97200448,Choohim@gmail.com,P5,,Tuesday,1,,,
+,Oct paid,,physical,Ang Chian Hui Vanessa,Ethan leong,96446055,Chianhui12@gmail.com,P6,Wednesday,,1,,,
+yes,paid for nov and dec too,,Physical,Vicky zhang Xiao Jian,Lin jia An,90688819,vickyzhangxj8848@gmail.com,P6,xx,Tuesday,2,,,
+yes,Nov paid,,Online,Jayden Neo,Vivian Yap Hui Mei,97318231,Yhuimei@gmail.com,P6,Monday,Wednesday,2,,,
+yes,nov and dec paid,,online,Yap cHEIN ning,Wayne  Lee,98006652,leejianxiang@gmail.com,P5,Thursday,Tuesday,2,,,
+yes,nov and dec paid,,Online,Sia Soo KIMG Sharon,Ruth Ong,90055538,Sharon.oylssk@gmail.com,P5,,Tuesday,1,,,
+yes,nov and dec paid,,Online,Francis Tan,Kaylin Tan,98428697,,P6,,Tuesday,1,,,
+,Oct paid,,Online,Wu Qiong,Liu Wei xUAN,93657288,qiongw4@gmail.com,P6,MONDAY ,,1,,,
+,Oct paid,,Physical,Wu Qiong,Liu Wei xUAN,93657288,qiongw4@gmail.com,P6,,Wednesday,1,,,
+yes,Oct to Dec paid,,online,Kylynn Lim,Steaphy Yap Bee Min,91088637,steaphyyap86@gmail.com,P5,,Saturday,1,,,
+YES,Nov and Dec paid,,onLINE,Felicity Ngiam,Desiree Tan min En,84364986,felicityngiam@gmail.com,P6,,Wednesday,1,,,
+yes,nov and dec paid,,onLINE,Eunice Chin Lee Tyan,Wong Sheng En,93214836,eunicechinlt@gmail.com,P5,,Saturday,1,,,
+yes,nov and dec paid,,Online,Tanean Ailei,Elly,90221876,mattyaitan@gmail.com,P6,,Tuesday,1,,,
+,Oct paid,uen paid,Physical,Chuan Ng,Adele Ng,91262728,mrngcc@gmail.com,P5,,Tuesday,1,,,
+yes,nov and dec paid,,Physical,Wendy ,Sheryse,94753577,ponyofoo2014@gmail.com,P6,,Tuesday,1,,,
+yes,nov and dec paid,,Physical,Alvin Chan,Vivian Chan,93887673,alvinchan1980@gmail.com,P6,,Tuesday,1,,,
+,Oct paid,,Physical,linan,Leyao,91018958,linan07501@gmail.com,P6,,Wednesday,1,,,
+yes,nov and dec paid,,online,Sean Foo,Zeth Foo,91550120,seanfzc@gmail.com,P5,,Saturday,1,,,
+yes,nov and dec paid,,Online,Grace Sim,alyssa tay,98899939,Gracesim512@gmail.com.sg,P4,,friday,1,,,
+yes,nov and dec paid,,Physical,jasmine ong,george choo,94752875,,P4,,Friday,1,,,
+,oct paid,,online,WenQi (Lee Chi yong),Louis,96568693,wenqi1101@gmail.com,P5,,Tuesday,1,,,
+yes,nov and dec paid,,online,Olivia ooi,lim miow wah,96249756,Janmiowwah@gmail.com,P6,,Tuesday,1,,,
+yes,oct to dec paid,,online,Kyler Tey,Anthea Chng,97479808,Janmiowwah@gmail.com,P6,,Tuesday,1,,,
+yes,Dec paid. jan to March 2026 paid,,Physical,Lam Shi Wen. Koh Hock Siong,Koh Kai Jun,90307343,kohkaijun9@gmail.com,P6,Wednesday,,1,,,
+yes,nov and dec paid,,online,Yu Tang,Nicole Xu,80398967,,P6,,Saturday,1,,,
+package,Sep-26,,Online,Lee Yee Jen,Goh Yuh ping,97854092,yuhpinggoh@gmail.com,P6,xx,xx,2,,,</script>
+
+    <script id="csv-packages" type="text/template">,,,,,,,
+,,2025 package,,,,,
+,1,Sharon Lee (2 children),Nov 2024 to Oct 2025,P5 Sci and math,,,
+,,,Dec 2024 to Oct 2025,p3 science,,4166,
+,2,Elaine Khoo,Jan 2025 to Sept 2025 + 3 workshop credits,P6 ,,1536,old price plus a few 10 years series
+,,Dylan sis Mavis,Nov 2024 to Sept 2025 + 6 holiday credits,P6 math and science,,3328,
+,,Marilyn (Adriel),Nov 2024 to Oct 2025,P5 Math and Science(Math physical),,3443,
+,,Yi En,Nov 2024 to Sept 2025,P6 Math and Science,,,
+,,Yi Xuan,Nov 2024 to Oct 2025 P4 sci,P4 math and science,,5312,
+,,,Dec 2024 to Oct 2025 P4 math,,,,
+,,Luke (Anne Ng),Nov 2024 to Sept 2025,P6 Sci,,1850,
+,,Maven Ong (Wendy),Nov 2024 to Sept 2026,P5 p6 math and sci ,,5376,online
+,,Ryan Natt (Catherine),Jan 2025 to Jan 2026 + $80 material fee,P4 sCIENCE ,,1536,
+,,Hui Kin Wai,Nov 2024 to Sept 2025,P6 math and science,,3117,
+,,(Ely Eng) Lim Shi Qi ,Feb 2025 to Feb 2026,P4 sCIENCE ,,1536,
+,,Beh Qiao En,Oct 2024 to Oct 2025,P5 Math and Science online,,3072,
+,,Sean Oh Thiam Leng,Feb 2025 to Feb 2026,P4 sCIENCE ,,1536,
+,,Jamie (Cayden),Oct 2024 to Sept 2025,P6 math and science,,4070,
+,,Choi Yoke Kiew (Ng Xin Hui),Nov 2024 to Dec 2025,p5 Sci,,1536,
+,,Adele Lim (Kaius Lee),Nov 2024 to Dec 2025,P5 Sci physical,,2220,
+,,Foo Wei Ling (Zoanne),Jan 2025 to June 2025,P6 Math and Science online (may need to top up for physical),,1536,
+,,Jayven Lin zhi qiang (Tingyi),Dec 2024 to Dec 2025,P4 sCIENCE ,,1504,
+,,Angelia (Dylan),Nov 2024 to Dec 2025,P5 Science,,2220,
+,,Joanne lee (Kyra Goh),Dec 2024 to Dec 2025,P4 math and science,,3008,
+,,Diana Khoo,Nov 2024 to Dec 2025,P4 sCIENCE ,,1536,
+,,Ang Kai Zhe (Hui Lai),Jan 2025 to Jan 2026,P6 science,,1536,
+,,Tan Evon (Jed),Dec 2024 to Sept 2025,P6 science,,1804,
+,,Alice Qian,Nov 2024 to Sept 2025 - 2 subjects,P6 math and science,,2560,
+,,Kai Ni,Feb 2025 to Sept 2025,p6 science only,,896,
+,,sally (Evey),Jan 2025 to May 2025,P5 math and science,,2156,
+,,Ghing Ghing	(Zhen Yao),Jan 2025 to Oct 2025,P4 sCIENCE ,,1280,
+,,Bryan Tan (Gwen),Jan 2025 to Dec 2025,P5 SCIENCE,,1408,
+,,Rayhan Ariz (SUE),Dec 2024 to Sept 2025 (Dec not paid yet),P6 Science,,1152,
+,,Nguyen thi Loc,Jan 2025 to Sept 2025(2 subjects),P6 math and sci,,2304,
+,,Mardiana,Jan 2025 to September 2025,P6 math and Sci,,2689,
+,,Shirley Ngao Wee Ling (TRISTON MUM),Nov 2024 - Dec 2025,p5 sCI,,1536,
+,,Li xue Qing (Li xiaoyu),Nov 2024 - Sept 2025,P6 sci,,1280,
+,,Ng Fang Ping,Jan 2025 to sept 2025,P6 sci,,1796,
+,,Du wen Juan,April 2025 to Oct 2025 (2 kids),P5 and sec 1 sci,,2369.92,
+,,Lydia Lee Pheck Lu,May 2025 to May 2026,P5 sci,,1633.92,
+,,sally (Evey),June 2025 to Nov 2025 2 subjects,P5 math and science,,2263.2,
+,,,,,,,
+,,2026,,,,,
+,,Fanny Kng,"Nat Jan to Sept, Iva jan to March (one subject)",P4 sci and P6 sci,,1770.08,
+,,Yee Jen (Goh Yuh Ping),"Nov and Dec 2025, Jan to Sept 2026 (2 subjects)",P6 math and p6 sci,,2723.2,
+,,Kyra Goh (Joanne Lee),Jan to Dec 2026 (2 subjects),P5 math and P5 sCI,,2995.52,
+,,Diana Khoo ,Jan 2026 to Jan 2027,P5 sci and P6 sci 2 months,,1633.92,
+,,Lee Yee Cheng (yi xuan),Nov 2025 to Dec 2026,P5 math and P5 sCI,,3267.84,
+,,Candace,Nov 2025 to Oct 2026,P6 Science + P6 Math 1 credit + 1 workshop credit,,1776,
+,,Javen (Vivian Ting yi),Jan 2026 to Dec 2026 (11 months),P5 Science ,,1497,UEN
+,,Marilyn (Adriel),Nov 2025 to Sept 2026,P6 math and p6 sci,,3247,
+,,Stepy (Olivia),Nov 2025 to Dec 2026,P4 sci,,,
+,,Bilin,Jan to sept 2026 + 3 workshop credit,P6 Sci,,1633.92,</script>
+
+    <script id="csv-withdrawal" type="text/template">,,,,,,,,,,,,,
+package,Jan-26,1,Online,Ryan Natt,Catherine Natt,90071209,catherinenatt@gmail.com,P4,,Saturday,1,128,paid
+Package,Oct-25,,Online,Beh Qiao En,Jessie Tai,83987308,michaelbeh81@gmail.com,P5,Wednesday,Wedmnesday,2,,
+,Oct paid,,online,Tristan Tan,Serena kong,97680501,snowy_dew@hotmail.com,P5,Monday,,1,,
+,Oct paid,,Physical,Poe Wah Li,Zulat Nadi Lin,98396704,poewahlin@gmail.com,P5,,Wednesday,1,,</script>
+    <!-- END CSV DATA TEMPLATES -->
+
+    <header class="bg-indigo-600 text-white shadow-lg sticky top-0 z-30 flex-none">
+        <div class="px-4 py-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-xl md:text-2xl font-bold flex items-center gap-2">
+                    <i data-lucide="users" class="h-6 w-6 md:h-8 md:w-8"></i>
+                    Tuition Manager
+                </h1>
+                <p class="text-indigo-100 text-xs md:text-sm mt-1">
+                    <span id="family-count">0</span> Accounts • <span id="student-count">0</span> Students
+                </p>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="exportData()" class="bg-indigo-700 hover:bg-indigo-800 p-2 px-3 rounded-lg transition-colors shadow-sm flex items-center gap-2 text-sm" title="Download Full Data">
+                    <i data-lucide="download" class="h-4 w-4"></i> Export Data
+                </button>
+                <button onclick="openSettings()" class="bg-indigo-700 hover:bg-indigo-800 p-2 rounded-lg transition-colors shadow-sm" title="Settings">
+                    <i data-lucide="settings" class="h-5 w-5"></i>
+                </button>
+                <button onclick="openModal()" class="bg-white text-indigo-600 hover:bg-indigo-50 px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors shadow-sm text-sm md:text-base">
+                    <i data-lucide="plus" class="w-5 h-5"></i>
+                    <span class="hidden sm:inline">Add Account</span>
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <!-- NAVIGATION BAR -->
+    <div class="bg-white border-b border-gray-200 sticky top-[68px] md:top-[80px] z-20 flex-none">
+        <div class="px-4 sm:px-6 lg:px-8 py-2 flex gap-4">
+            <button id="nav-accounts" onclick="setPage('accounts')" class="nav-button px-4 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-2 bg-indigo-50 text-indigo-700">
+                <i data-lucide="list-checks" class="w-4 h-4"></i> Accounts List
+            </button>
+            <button id="nav-schedule" onclick="setPage('schedule')" class="nav-button px-4 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-2 text-gray-600 hover:bg-gray-100">
+                <i data-lucide="calendar-check" class="w-4 h-4"></i> Schedule View
+            </button>
+        </div>
+    </div>
+    <!-- END NAVIGATION BAR -->
+
+    <main class="flex-grow overflow-hidden flex flex-col w-full px-4 sm:px-6 lg:px-8 py-6 relative">
+        
+        <!-- ACCOUNTS PAGE -->
+        <div id="page-accounts" class="flex-grow flex flex-col space-y-6">
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 space-y-4 flex-none">
+                <div class="relative">
+                    <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5"></i>
+                    <input type="text" id="searchInput" placeholder="Search Parent Name, Student Name, or Contact..." 
+                        class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none" oninput="renderTable()">
+                </div>
+
+                <div class="flex flex-wrap gap-4 items-end">
+                    <select id="statusFilter" class="p-2 bg-gray-50 border border-gray-200 rounded-md text-sm w-40" onchange="renderTable()">
+                        <option value="All">All Payment Status</option>
+                        <option value="Paid">Paid</option>
+                        <option value="Unpaid">Unpaid</option>
+                    </select>
+                    <select id="invoiceFilter" class="p-2 bg-gray-50 border border-gray-200 rounded-md text-sm w-40" onchange="renderTable()">
+                        <option value="All">All Invoice Status</option>
+                        <option value="Sent">Sent</option>
+                        <option value="Not Sent">Not Sent</option>
+                    </select>
+                    <select id="levelFilter" class="p-2 bg-gray-50 border border-gray-200 rounded-md text-sm w-40" onchange="renderTable()">
+                        <option value="All">All Levels</option>
+                        </select>
+                    <select id="subjectFilter" class="p-2 bg-gray-50 border border-gray-200 rounded-md text-sm w-40" onchange="renderTable()">
+                        <option value="All">All Subjects</option>
+                        </select>
+                    <select id="worksheetFilter" class="p-2 bg-gray-50 border border-gray-200 rounded-md text-sm w-40" onchange="renderTable()">
+                        <option value="All">All Worksheet Status</option>
+                        <option value="Ordered">Ordered (Yes)</option>
+                        <option value="Not Ordered">Not Ordered (No)</option>
+                    </select>
+                    <select id="dayFilter" class="p-2 bg-gray-50 border border-gray-200 rounded-md text-sm w-40" onchange="renderTable()">
+                        <option value="All">All Days</option>
+                        </select>
+                    <select id="packageFilter" class="p-2 bg-gray-50 border border-gray-200 rounded-md text-sm w-40" onchange="renderTable()">
+                        <option value="All">All Package Status</option>
+                        <option value="Package">Package (Yes)</option>
+                        <option value="Non-Package">Monthly (No)</option>
+                    </select>
+                    <select id="trialFilter" class="p-2 bg-gray-50 border border-gray-200 rounded-md text-sm w-40" onchange="renderTable()">
+                        <option value="All">All Trial Status</option>
+                        <option value="Trial">Trial (Yes)</option>
+                        <option value="Non-Trial">Non-Trial (No)</option>
+                    </select>
+                    <button onclick="clearAllFilters()" class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-md text-sm flex items-center gap-1">
+                        <i data-lucide="x-circle" class="w-4 h-4"></i> Clear Filters
+                    </button>
+                </div>
+            </div>
+
+            <div id="activeFiltersDisplay" class="mb-4 text-sm flex-none hidden">
+                <h3 class="text-xs font-bold text-gray-500 uppercase mb-2 flex items-center gap-1">
+                    <i data-lucide="filter" class="w-4 h-4 text-indigo-500"></i>
+                    Active Filters:
+                </h3>
+                <div id="filterCriteriaBadges" class="flex flex-wrap gap-2">
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 flex-grow overflow-hidden flex flex-col mb-16">
+                <div class="overflow-x-auto custom-scrollbar flex-grow">
+                    <table class="w-full text-left border-collapse min-w-[1700px]">
+                        <thead class="bg-gray-50 sticky top-0 z-10">
+                            <tr class="border-b border-gray-200 text-xs uppercase text-gray-500 font-semibold">
+                                <th class="p-4 w-10 bg-gray-50">
+                                    <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this)" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                </th>
+                                
+                                <th class="p-4 w-28 bg-gray-50">
+                                    <div class="sort-button" onclick="sortTable('paid')">Payment<i data-lucide="chevrons-up-down" class="w-4 h-4 text-gray-400"></i></div>
+                                </th>
+                                <th class="p-4 w-28 bg-gray-50">
+                                    <div class="sort-button" onclick="sortTable('isPackage')">Package?<i data-lucide="chevrons-up-down" class="w-4 h-4 text-gray-400"></i></div>
+                                </th>
+                                <th class="p-4 w-28 bg-gray-50">
+                                    <div class="sort-button" onclick="sortTable('isTrial')">Trial?<i data-lucide="chevrons-up-down" class="w-4 h-4 text-gray-400"></i></div>
+                                </th>
+                                <th class="p-4 w-28 bg-gray-50">
+                                    <div class="sort-button" onclick="sortTable('invoiceSent')">Invoice Sent?<i data-lucide="chevrons-up-down" class="w-4 h-4 text-gray-400"></i></div>
+                                </th>
+                                <th class="p-4 w-28 bg-gray-50">
+                                    <div class="sort-button" onclick="sortTable('worksheetOrdered')">Worksheet<i data-lucide="chevrons-up-down" class="w-4 h-4 text-gray-400"></i></div>
+                                </th>
+                                <th class="p-4 w-48 bg-gray-50">
+                                    <div class="sort-button" onclick="sortTable('parentName')">Parent Details<i data-lucide="chevrons-up-down" class="w-4 h-4 text-gray-400"></i></div>
+                                </th>
+                                <th class="p-4 bg-gray-50">Students & Subjects</th>
+                                <th class="p-4 w-32 bg-gray-50">
+                                    <div class="sort-button" onclick="sortTable('totalFee')">Total Bill<i data-lucide="chevrons-up-down" class="w-4 h-4 text-gray-400"></i></div>
+                                </th>
+                                <th class="p-4 w-48 bg-gray-50">Contact / Note</th>
+                                <th class="p-4 text-right w-40 bg-gray-50">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="familyTableBody" class="divide-y divide-gray-100">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCHEDULE PAGE -->
+        <div id="page-schedule" class="hidden flex flex-col space-y-6">
+            <h2 class="text-xl font-bold text-gray-800">2026 Schedule - Student Allocation</h2>
+            
+            <h3 class="text-lg font-semibold text-gray-700 mt-4">Weekdays Schedule (Monday - Friday + Sunday)</h3>
+            <div id="scheduleGridContainer-weekdays" class="overflow-x-auto custom-scrollbar">
+                <!-- Weekday Schedule Grid will be rendered here -->
+            </div>
+
+            <h3 class="text-lg font-semibold text-gray-700 mt-6">Saturday Morning Schedule</h3>
+            <div id="scheduleGridContainer-saturday" class="overflow-x-auto custom-scrollbar">
+                <!-- Saturday Schedule Grid will be rendered here -->
+            </div>
+            
+            <div id="scheduleFilterResult" class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hidden">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-indigo-600">
+                        Students in Slot: <span id="slotTitleDisplay" class="text-gray-800"></span>
+                    </h3>
+                    <button onclick="clearScheduleFilter()" class="text-sm text-red-500 hover:text-red-700 flex items-center gap-1">
+                        <i data-lucide="x-circle" class="w-4 h-4"></i> Clear Filter
+                    </button>
+                </div>
+                <div class="space-y-3" id="slotStudentList">
+                    <!-- List of students in the selected slot -->
+                </div>
+            </div>
+
+        </div>
+
+        <div id="batchBar" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 max-w-2xl w-full hidden animate-slide-up z-40">
+            <div class="bg-gray-900 text-white rounded-full shadow-2xl p-3 px-6 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="bg-indigo-500 rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm" id="batchCount">0</div>
+                    <span class="font-medium text-sm">Accounts Selected</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="clearSelection()" class="text-gray-400 hover:text-white text-xs font-medium px-2">Cancel</button>
+                    <button onclick="startBatch()" class="bg-white text-gray-900 hover:bg-gray-100 px-4 py-2 rounded-full font-bold text-sm flex items-center gap-2 transition-colors">
+                        <i data-lucide="send" class="w-4 h-4"></i> Start Batch Send
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
+        <div class="absolute inset-0 flex items-center justify-center p-4 pointer-events-none">
+            <div class="bg-white rounded-xl shadow-2xl w-full max-w-5xl max-h-[95vh] overflow-y-auto border border-gray-100 pointer-events-auto transform transition-all scale-100 flex flex-col">
+                
+                <div class="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
+                    <div>
+                        <h2 id="modalTitle" class="text-xl font-bold text-gray-800">Add New Account</h2>
+                        <p class="text-sm text-gray-500">Manage parent, students, and subject breakdown.</p>
+                    </div>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 bg-gray-50 p-2 rounded-full">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+
+                <form id="familyForm" onsubmit="handleFormSubmit(event)" class="flex-grow overflow-y-auto">
+                    <input type="hidden" id="editId" name="id">
+                    
+                    <div class="p-6 space-y-8">
+                        <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 space-y-4">
+                            <h3 class="text-sm font-bold text-indigo-600 uppercase tracking-wider flex items-center gap-2">
+                                <i data-lucide="user" class="w-4 h-4"></i> Parent / Account Holder
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <div class="space-y-1 md:col-span-2">
+                                    <label class="text-xs font-semibold text-gray-600">Parent Name *</label>
+                                    <input name="parentName" required class="w-full p-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-xs font-semibold text-gray-600">Bank Account Name (Optional)</label>
+                                    <input name="bankAccountName" class="w-full p-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white" placeholder="Name on bank account">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-xs font-semibold text-gray-600">Contact Number</label>
+                                    <input name="contact" class="w-full p-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-xs font-semibold text-gray-600">Email</label>
+                                    <input name="email" type="email" class="w-full p-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white">
+                                </div>
+
+                                <div class="space-y-1 md:col-span-4 grid grid-cols-4 gap-4 border-t pt-4">
+                                    <div class="flex items-center gap-2">
+                                        <input type="checkbox" id="isPackage" name="isPackage" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                        <label for="isPackage" class="text-sm font-semibold text-gray-700">Package Account</label>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <input type="checkbox" id="isTrial" name="isTrial" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                        <label for="isTrial" class="text-sm font-semibold text-gray-700">Trial Account?</label>
+                                    </div>
+                                    <div class="space-y-1 md:col-span-2" id="packageEndDateGroup">
+                                        <label class="text-xs font-semibold text-gray-600">Package End Date (Last Month Paid)</label>
+                                        <input type="month" id="packageEndDate" name="packageEndDate" class="w-full p-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white">
+                                    </div>
+                                </div>
+
+
+                                <div class="space-y-1 md:col-span-2">
+                                    <label class="text-xs font-semibold text-gray-600">Payment/Invoice Note (Last Paid Date for Auto-Reset)</label>
+                                    <input name="paymentNote" placeholder="e.g. Jan 2025 Paid, 2025-01-01" class="w-full p-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white">
+                                </div>
+                                <div class="space-y-1 md:col-span-2">
+                                    <label class="text-xs font-semibold text-gray-600">Internal Remarks</label>
+                                    <input name="remarks" class="w-full p-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-end border-b pb-2">
+                                <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2">
+                                    <i data-lucide="users" class="w-4 h-4"></i> Students (Children)
+                                </h3>
+                                <button type="button" onclick="addChildRow()" class="text-xs bg-indigo-600 text-white hover:bg-indigo-700 px-3 py-1.5 rounded-full font-bold flex items-center gap-1 transition-colors">
+                                    <i data-lucide="plus" class="w-3 h-3"></i> Add Child
+                                </button>
+                            </div>
+
+                            <div id="childrenContainer" class="space-y-6">
+                                </div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 border-t border-gray-100 flex justify-end gap-3 sticky bottom-0 bg-white shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+                        <div class="mr-auto flex items-center gap-2">
+                            <span class="text-sm font-semibold text-gray-500">Estimated Total:</span>
+                            <span id="modalTotalDisplay" class="text-xl font-bold text-indigo-600">$0.00</span>
+                        </div>
+                        <button type="button" onclick="closeModal()" class="px-6 py-2.5 text-gray-600 hover:bg-gray-100 rounded-lg font-medium">Cancel</button>
+                        <button type="submit" class="px-8 py-2.5 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 shadow-lg flex items-center gap-2">
+                            <i data-lucide="save" class="w-4 h-4"></i> Save Account
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="qrModal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity" onclick="closeQrModal()"></div>
+        <div class="absolute inset-0 flex items-center justify-center p-4 pointer-events-none">
+            <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl border border-gray-100 pointer-events-auto transform transition-all scale-100 flex flex-col md:flex-row overflow-hidden max-h-[90vh]">
+                
+                <div class="bg-gray-100 p-6 flex flex-col items-center justify-center min-w-[300px] md:w-1/2 overflow-auto">
+                    <div id="batchHeader" class="hidden w-full mb-3 bg-gray-900 text-white text-xs font-bold py-1 px-3 rounded-full text-center shadow-md">
+                        Batch Sending: <span id="batchIndexDisplay">1</span> / <span id="batchTotalDisplay">5</span>
+                    </div>
+                    <h3 class="font-bold text-gray-500 text-sm mb-2 uppercase tracking-wider">Invoice Preview</h3>
+                    <div class="bg-white shadow-lg border border-gray-200">
+                        <canvas id="invoiceCanvas" class="max-w-full h-auto"></canvas>
+                    </div>
+                    <button onclick="downloadQr()" class="mt-4 text-xs bg-gray-800 hover:bg-gray-900 px-4 py-2 rounded text-white transition-colors flex items-center gap-2">
+                        <i data-lucide="download" class="w-3 h-3"></i> Download Image
+                    </button>
+                </div>
+
+                <div class="p-6 md:w-1/2 flex flex-col gap-4 bg-white overflow-y-auto">
+                    <div class="flex justify-between items-center mb-2">
+                        <h2 class="text-lg font-bold text-gray-800">Share Invoice</h2>
+                        <button onclick="closeQrModal()" class="text-gray-400 hover:text-gray-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="bg-indigo-50 p-4 rounded-lg border border-indigo-100">
+                            <label class="text-xs font-bold text-indigo-500 uppercase">Total Amount ($)</label>
+                            <input type="number" id="qrAmount" class="w-full p-2 border-b-2 border-indigo-500 bg-transparent text-2xl font-bold text-indigo-900 outline-none" oninput="redrawInvoice()">
+                        </div>
+                        
+                        <div>
+                            <label class="text-xs font-bold text-gray-500 uppercase">Reference (Parent)</label>
+                            <input type="text" id="qrRef" class="w-full p-2 border border-gray-200 rounded text-sm" oninput="redrawInvoice()">
+                        </div>
+
+                        <div class="text-sm text-gray-500 bg-gray-50 p-3 rounded">
+                            <p>This generated image contains:</p>
+                            <ul class="list-disc ml-4 mt-1 space-y-1 text-xs">
+                                <li>Parent Name & Invoice Date</li>
+                                <li>Breakdown of students & subjects</li>
+                                <li>Fee breakdown</li>
+                                <li>PayNow QR Code</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mt-auto pt-4 space-y-3">
+                        <button onclick="openWhatsApp(true)" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors shadow-md text-sm md:text-base">
+                            <i data-lucide="message-circle" class="w-5 h-5"></i> 
+                            <span>Copy Invoice & Open WhatsApp</span>
+                        </button>
+                        
+                        <div id="batchControls" class="hidden pt-2 border-t border-gray-100 grid grid-cols-2 gap-3">
+                            <button onclick="skipBatchItem()" class="px-4 py-2 text-gray-600 hover:bg-gray-100 font-medium rounded-lg text-sm border border-gray-200">
+                                Skip
+                            </button>
+                            <button onclick="nextBatchItem()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg text-sm flex items-center justify-center gap-1">
+                                Next Account <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+
+                        <p class="text-[10px] text-gray-400 text-center leading-tight">
+                            We will copy the **full invoice image** to your clipboard. <br>
+                            Just press **Ctrl + V** (Paste) in the WhatsApp chat. <br>
+                            * This will mark invoice as SENT.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="settingsModal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeSettings()"></div>
+        <div class="absolute inset-0 flex items-center justify-center p-4 pointer-events-none">
+            <div class="bg-white rounded-xl shadow-xl w-full max-w-sm p-6 pointer-events-auto">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold">App Settings</h3>
+                    <button onclick="closeSettings()" class="text-gray-400 hover:text-gray-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-100 space-y-3">
+                        <h4 class="text-xs font-bold text-indigo-600 uppercase tracking-wider">PayNow Configuration</h4>
+                        <div>
+                            <label class="text-sm font-medium text-gray-700">UEN or Mobile (8 digits)</label>
+                            <input id="settingsUen" class="w-full p-2 border border-gray-300 rounded mt-1 text-sm" placeholder="e.g. 91234567 or 200012345A">
+                        </div>
+                        <div>
+                            <label class="text-sm font-medium text-gray-700">Bank Account Name (for payment check)</label>
+                            <input id="settingsBankName" class="w-full p-2 border border-gray-300 rounded mt-1 text-sm" placeholder="e.g. ABC TUTORING PTE LTD">
+                        </div>
+                        <div>
+                            <label class="text-sm font-medium text-gray-700">Merchant Name (for invoice display)</label>
+                            <input id="settingsMerchant" class="w-full p-2 border border-gray-300 rounded mt-1 text-sm">
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-100 space-y-3">
+                        <h4 class="text-xs font-bold text-indigo-600 uppercase tracking-wider">Default Fee Rates</h4>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-sm font-medium text-gray-700">P3-P6 Online Rate ($)</label>
+                                <input id="settingsOnlineRate" type="number" class="w-full p-2 border border-gray-300 rounded mt-1 text-sm" placeholder="128">
+                            </div>
+                            <div>
+                                <label class="text-sm font-medium text-gray-700">P3-P6 Physical Rate ($)</label>
+                                <input id="settingsPhysicalRate" type="number" class="w-full p-2 border border-gray-300 rounded mt-1 text-sm" placeholder="150">
+                            </div>
+                            <!-- NEW Sec 1 Rates -->
+                            <div>
+                                <label class="text-sm font-medium text-gray-700">Sec 1 Online Rate ($)</label>
+                                <input id="settingsSec1OnlineRate" type="number" class="w-full p-2 border border-gray-300 rounded mt-1 text-sm" placeholder="140">
+                            </div>
+                            <div>
+                                <label class="text-sm font-medium text-gray-700">Sec 1 Physical Rate ($)</label>
+                                <input id="settingsSec1PhysicalRate" type="number" class="w-full p-2 border border-gray-300 rounded mt-1 text-sm" placeholder="170">
+                            </div>
+                            <!-- End NEW Sec 1 Rates -->
+                        </div>
+                    </div>
+
+                    <button onclick="saveSettings()" class="w-full bg-indigo-600 text-white py-2 rounded-lg font-medium hover:bg-indigo-700">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <template id="childRowTemplate">
+        <div class="child-row bg-gray-50 p-4 rounded-xl border border-gray-200 relative group animate-fade-in transition-all hover:shadow-sm">
+            <button type="button" onclick="this.closest('.child-row').remove(); recalcModalTotal();" class="absolute top-3 right-3 text-gray-300 hover:text-red-500 transition-colors p-1">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3 pr-8">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-gray-400 uppercase">Student Name</label>
+                    <input name="childName" required placeholder="Student Name" class="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-1 focus:ring-indigo-500 outline-none">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-gray-400 uppercase">Level</label>
+                    <select name="childLevel" onchange="updateRowFees(this.closest('.child-row'))" class="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-1 focus:ring-indigo-500 outline-none bg-white">
+                        <option value="P3">P3</option><option value="P4">P4</option><option value="P5">P5</option><option value="P6">P6</option><option value="Sec 1">Sec 1</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                <div class="bg-gray-50 px-3 py-2 border-b border-gray-200 flex justify-between items-center">
+                    <span class="text-[10px] font-bold text-gray-500 uppercase">Subjects</span>
+                    <button type="button" onclick="addSubjectRow(this.closest('.child-row'))" class="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-2 py-1 rounded transition-colors">
+                        + Add Subject
+                    </button>
+                </div>
+                <div class="subjects-container p-2 space-y-2">
+                    </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="subjectRowTemplate">
+        <div class="subject-row flex items-center gap-2 animate-fade-in">
+            <div class="flex-grow">
+                <input name="subjectName" placeholder="Subject (e.g. Math)" class="w-full p-1.5 text-xs border border-gray-200 rounded focus:ring-1 focus:ring-indigo-500 outline-none">
+            </div>
+            <!-- UPDATED: Timeslot Dropdown -->
+            <div class="w-48">
+                <select name="subjectTimeDay" onchange="updateSubjectFee(this)" class="w-full p-1.5 text-xs border border-gray-200 rounded focus:ring-1 focus:ring-indigo-500 outline-none bg-white">
+                    <option value="">-- Select Day & Time --</option>
+                </select>
+            </div>
+            <!-- END UPDATED -->
+            <div class="w-24">
+                <select name="subjectMode" onchange="updateSubjectFee(this)" class="w-full p-1.5 text-xs border border-gray-200 rounded focus:ring-1 focus:ring-indigo-500 outline-none bg-white">
+                    <option value="Online">Online</option>
+                    <option value="Physical">Physical</option>
+                </select>
+            </div>
+            <div class="w-20 relative">
+                <span class="absolute left-2 top-1.5 text-gray-400 text-xs">$</span>
+                <input name="subjectFee" type="number" oninput="recalcModalTotal()" placeholder="0" class="w-full pl-4 p-1.5 text-xs border border-gray-200 rounded focus:ring-1 focus:ring-indigo-500 outline-none font-medium">
+            </div>
+            <button type="button" onclick="this.closest('.subject-row').remove(); recalcModalTotal();" class="text-gray-300 hover:text-red-500 p-1">
+                <i data-lucide="x" class="w-3 h-3"></i>
+            </button>
+        </div>
+    </template>
+
+    <script>
+        // --- Data Structure ---
+        let families = [];
+        let selectedIds = new Set();
+        let batchQueue = [];
+        let currentBatchIndex = 0;
+        let appSettings = { 
+            uen: '91234567', 
+            merchant: 'Tuition Teacher',
+            bankAccountName: 'Tuition Teacher', 
+            onlineRate: 128,
+            physicalRate: 150,
+            sec1OnlineRate: 140, // NEW DEFAULT
+            sec1PhysicalRate: 170  // NEW DEFAULT
+        };
+        let currentQrFamily = null;
+        
+        // --- PAGE STATE ---
+        let currentPage = 'accounts'; 
+        let activeScheduleSlot = null; // { day: 'Monday', time: '9am to 10.45am', level: 'P6', subject: 'Math', type: 'Physical' }
+
+        // Allowed levels and main subjects for filters
+        const LEVELS = ["P3", "P4", "P5", "P6", "Sec 1"];
+        const SUBJECTS = ["Math", "Science"]; 
+        const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+        
+        // --- UPDATED SCHEDULE DEFINITIONS ---
+        // Slots for Weekdays (Monday to Friday)
+        const WEEKDAY_TIMESLOTS = ['3.00pm to 4.45pm', '5.00pm to 6.45pm', '7.00pm to 8.45pm'];
+        // Slots for Saturday (Morning only as requested)
+        const SATURDAY_TIMESLOTS = ['9.00am to 10.45am', '11.00am to 12.45pm', '1.00pm to 2.45pm'];
+        const SUNDAY_TIMESLOTS = []; 
+        
+        // Combined list of all unique timeslots for dropdowns/sorting purposes
+        const TIMESLOTS = [...new Set([...WEEKDAY_TIMESLOTS, ...SATURDAY_TIMESLOTS, ...SUNDAY_TIMESLOTS])].sort((a, b) => {
+            // Sort to ensure all 'am' slots come before 'pm' slots for cleaner table layout
+            const timeA = parseTimeForSort(a);
+            const timeB = parseTimeForSort(b);
+            if (timeA < timeB) return -1;
+            if (timeA > timeB) return 1;
+            return 0;
+        });
+
+        function parseTimeForSort(timeStr) {
+            const match = timeStr.match(/(\d{1,2})\:(\d{2})(am|pm)/i);
+            if (!match) return 0;
+            let [_, hourStr, minuteStr, ampm] = match;
+            let hour = parseInt(hourStr);
+            const minute = parseInt(minuteStr);
+            if (ampm.toLowerCase() === 'pm' && hour < 12) hour += 12;
+            if (ampm.toLowerCase() === 'am' && hour === 12) hour = 0; // Midnight case
+            return hour * 60 + minute;
+        }
+
+        // SCHEDULE_DATA defines the individual cells/classes users can book into. (UPDATED)
+        const SCHEDULE_DATA = [
+            // Monday
+            { day: 'Monday', time: '3.00pm to 4.45pm', level: 'P6', subject: 'Math', type: 'Physical' },
+            { day: 'Monday', time: '5.00pm to 6.45pm', level: 'P5', subject: 'Math', type: 'Physical' },
+            { day: 'Monday', time: '7.00pm to 8.45pm', level: 'P5', subject: 'Science', type: 'Physical' },
+
+            // Tuesday
+            { day: 'Tuesday', time: '3.00pm to 4.45pm', level: 'P6', subject: 'Science', type: 'Physical' },
+            { day: 'Tuesday', time: '5.00pm to 6.45pm', level: 'P5', subject: 'Science', type: 'Physical' },
+            { day: 'Tuesday', time: '7.00pm to 8.45pm', level: 'Sec 1', subject: 'Science', type: 'Physical' },
+
+            // Wednesday
+            { day: 'Wednesday', time: '3.00pm to 4.45pm', level: 'P6', subject: 'Math', type: 'Physical' },
+            { day: 'Wednesday', time: '5.00pm to 6.45pm', level: 'P4', subject: 'Math', type: 'Physical' },
+            { day: 'Wednesday', time: '7.00pm to 8.45pm', level: 'P6', subject: 'Science', type: 'Physical' },
+
+            // Thursday
+            { day: 'Thursday', time: '3.00pm to 4.45pm', level: 'P3', subject: 'Science', type: 'Physical' },
+            { day: 'Thursday', time: '5.00pm to 6.45pm', level: 'P5', subject: 'Math', type: 'Physical' },
+            { day: 'Thursday', time: '7.00pm to 8.45pm', level: 'P6', subject: 'Science', type: 'Physical' },
+
+            // Friday
+            { day: 'Friday', time: '3.00pm to 4.45pm', level: 'P4', subject: 'Science', type: 'Physical' },
+            { day: 'Friday', time: '5.00pm to 6.45pm', level: 'P6', subject: 'Math', type: 'Physical' },
+            { day: 'Friday', time: '7.00pm to 8.45pm', level: 'P6', subject: 'Science', type: 'Physical' }, // Added a placeholder slot based on observation
+
+            // Saturday (Morning slots only as requested)
+            { day: 'Saturday', time: '9.00am to 10.45am', level: 'P5', subject: 'Science', type: 'Online' }, // FIXED: Changed 10.45pm to 10.45am
+            { day: 'Saturday', time: '11.00am to 12.45pm', level: 'P6', subject: 'Science', type: 'Online' },
+            { day: 'Saturday', time: '1.00pm to 2.45pm', level: 'P4', subject: 'Science', type: 'Online' },
+            
+            // Sunday is empty as requested.
+        ];
+
+        // Generate a structured map for dropdown options to create optgroups
+        const SCHEDULE_OPTIONS_MAP = DAYS.reduce((acc, day) => {
+            acc[day] = SCHEDULE_DATA.filter(slot => slot.day === day).map(slot => 
+                `${slot.day}, ${slot.time} - ${slot.type} - ${slot.level} ${slot.subject}`
+            );
+            return acc;
+        }, {});
+
+        // Generate a flat list of unique schedule identifiers for easy data manipulation
+        const SCHEDULE_OPTIONS = SCHEDULE_DATA.map(slot => 
+            `${slot.day}, ${slot.time} - ${slot.type} - ${slot.level} ${slot.subject}`
+        );
+
+        // Sorting state
+        let currentSortKey = 'parentName';
+        let sortDirection = 'asc'; 
+
+        // --- UPDATED: Class Color Mapping (More contrast) ---
+        const CLASS_COLORS = {
+            'P3 Science': { bg: 'bg-yellow-200', text: 'text-yellow-900' }, 
+            
+            'P4 Math': { bg: 'bg-green-300', text: 'text-green-900' },
+            'P4 Science': { bg: 'bg-lime-200', text: 'text-lime-800' }, 
+            
+            'P5 Math': { bg: 'bg-blue-300', text: 'text-blue-900' },
+            'P5 Science': { bg: 'bg-cyan-200', text: 'text-cyan-800' }, 
+            
+            'P6 Math': { bg: 'bg-fuchsia-300', text: 'text-fuchsia-900' },
+            'P6 Science': { bg: 'bg-pink-300', text: 'text-pink-900' }, 
+            
+            'Sec 1 Science': { bg: 'bg-indigo-300', text: 'text-indigo-900' }, 
+            'default': { bg: 'bg-gray-200', text: 'text-gray-800' },
+        };
+        
+        function getClassColor(level, subject) {
+            const key = `${level} ${subject}`;
+            return CLASS_COLORS[key] || CLASS_COLORS['default'];
+        }
+        // --- END Class Color Mapping ---
+
+        // --- Logo Setup (New) ---
+        let logoImage = null;
+        // Using raw content link for better cross-origin compatibility
+        const LOGO_URL = 'https://dl.dropboxusercontent.com/scl/fi/4gc1zqmquhngo8ldbh221/Polymath_Logo.png?rlkey=ljkd084xinq64ly444ugr6sq9&raw=1'; 
+        
+        function loadLogo() {
+            logoImage = new Image();
+            // Essential for drawing to canvas and exporting
+            logoImage.crossOrigin = 'Anonymous'; 
+            logoImage.onerror = () => { console.error("Failed to load logo from URL."); logoImage = null; };
+            logoImage.onload = () => { console.log("Logo loaded successfully."); };
+            logoImage.src = LOGO_URL;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Load data and auto-update statuses FIRST
+            const saved = localStorage.getItem('tuition_families_v6'); 
+            if (saved && saved !== '[]') {
+                families = JSON.parse(saved);
+                // Ensure new fields exist for loaded data (backward compatibility)
+                families.forEach(f => {
+                    if (f.worksheetOrdered === undefined) f.worksheetOrdered = false;
+                    if (f.isPackage === undefined) f.isPackage = false;
+                    if (f.packageEndDate === undefined) f.packageEndDate = null;
+                    if (f.isTrial === undefined) f.isTrial = false; 
+                    if (f.bankAccountName === undefined) f.bankAccountName = ""; 
+                    // New settings defaults
+                    if (f.sec1OnlineRate === undefined) f.sec1OnlineRate = 140;
+                    if (f.sec1PhysicalRate === undefined) f.sec1PhysicalRate = 170;
+                });
+            } else {
+                parseAllCSVData();
+            }
+
+            // --- IMPORTANT: Run automated checks on load ---
+            checkAndAutoUpdateStatuses();
+            // ----------------------------------------------
+            
+            // Load the logo immediately
+            loadLogo();
+
+            // 2. Setup UI and render
+            populateFilterOptions('levelFilter', LEVELS);
+            populateFilterOptions('subjectFilter', SUBJECTS);
+            populateFilterOptions('dayFilter', DAYS); 
+
+            loadSettings();
+            
+            // --- NEW: Run rate update on load after settings are loaded ---
+            updateAllSubjectFees(families, appSettings);
+            // -------------------------------------------------------------
+            
+            setPage(currentPage); // Initialize the current page view
+            lucide.createIcons();
+            
+            // Bindings for Account page are already in HTML for filters
+        });
+        
+        // --- PAGE CONTROL LOGIC (NEW) ---
+        function setPage(page) {
+            currentPage = page;
+            
+            document.getElementById('page-accounts').classList.add('hidden');
+            document.getElementById('page-schedule').classList.add('hidden');
+            
+            document.getElementById('nav-accounts').classList.remove('bg-indigo-50', 'text-indigo-700', 'hover:bg-gray-100', 'text-gray-600');
+            document.getElementById('nav-accounts').classList.add('text-gray-600', 'hover:bg-gray-100');
+            document.getElementById('nav-schedule').classList.remove('bg-indigo-50', 'text-indigo-700', 'hover:bg-gray-100', 'text-gray-600');
+            document.getElementById('nav-schedule').classList.add('text-gray-600', 'hover:bg-gray-100');
+
+            if (page === 'accounts') {
+                document.getElementById('page-accounts').classList.remove('hidden');
+                document.getElementById('nav-accounts').classList.remove('text-gray-600', 'hover:bg-gray-100');
+                document.getElementById('nav-accounts').classList.add('bg-indigo-50', 'text-indigo-700');
+                renderTable();
+            } else if (page === 'schedule') {
+                document.getElementById('page-schedule').classList.remove('hidden');
+                document.getElementById('nav-schedule').classList.remove('text-gray-600', 'hover:bg-gray-100');
+                document.getElementById('nav-schedule').classList.add('bg-indigo-50', 'text-indigo-700');
+                renderScheduleGrid();
+                // Clear filter only if we are moving from a different page, not on refresh
+                clearScheduleFilter(); 
+            }
+            lucide.createIcons();
+        }
+
+        // --- SCHEDULE VIEW LOGIC (UPDATED) ---
+        
+        // Helper to normalize the slot key for matching
+        function getSlotKey(s) {
+            if (s.mode === 'Package') return null;
+            // Since input is restricted, rely on the exact format: 'Day, Time - Type - Level Subject'
+            const parts = (s.timeDay || '').split(' - ');
+            if (parts.length < 3) return null;
+
+            const [dayTimeStr, typeStr, levelSubjectStr] = parts;
+            const [day, time] = dayTimeStr.split(',').map(s => s.trim());
+            const [level, subject] = levelSubjectStr.split(' ', 2); 
+
+            if (!day || !time || !level || !subject) return null;
+            
+            return {
+                day: day.trim(),
+                time: time.trim(),
+                level: level.trim().replace('Primary ', 'P'),
+                subject: subject.trim(),
+                type: typeStr.trim()
+            };
+        }
+        
+        function getStudentsInSlot(slot) {
+            const slotLevelLower = slot.level.toLowerCase();
+            const slotSubjectLower = slot.subject.toLowerCase();
+            const slotDayLower = slot.day.toLowerCase();
+            const slotTimeLower = slot.time.toLowerCase().replace(/\s/g, ''); 
+            
+            return families.filter(f => 
+                f.children.some(c => 
+                    c.level.toLowerCase() === slotLevelLower &&
+                    c.subjects.some(s => {
+                        const timeDayKey = getSlotKey(s);
+                        
+                        if (!timeDayKey) return false;
+
+                        // Match logic using the parsed structure
+                        return timeDayKey.day.toLowerCase() === slotDayLower &&
+                               timeDayKey.time.toLowerCase().replace(/\s/g, '') === slotTimeLower &&
+                               timeDayKey.level.toLowerCase() === slotLevelLower &&
+                               timeDayKey.subject.toLowerCase() === slotSubjectLower &&
+                               timeDayKey.type.toLowerCase() === slot.type.toLowerCase();
+                    })
+                )
+            );
+        }
+        
+        // NEW: Function to handle viewing/editing student account from schedule list
+        function openStudentAccount(familyId) {
+            // 1. Switch back to Accounts view
+            setPage('accounts'); 
+            
+            // 2. Wait for the page transition/render and open the modal
+            setTimeout(() => {
+                editFamily(familyId); 
+            }, 50); // Small delay to allow the DOM update to settle
+        }
+
+
+        function handleSlotClick(day, time, level, subject, type, slotElement) {
+            // We use the full identifier string as the key to ensure uniqueness 
+            const slotKey = `${day}, ${time} - ${type} - ${level} ${subject}`; 
+            
+            // Toggle active status
+            document.querySelectorAll('.slot-content').forEach(el => el.classList.remove('slot-active'));
+            
+            if (activeScheduleSlot === slotKey) {
+                // Clear filter
+                clearScheduleFilter();
+            } else {
+                // Set new filter
+                slotElement.classList.add('slot-active');
+                activeScheduleSlot = slotKey;
+                
+                const slot = { day, time, level, subject, type };
+                const matchingStudents = getStudentsInSlot(slot);
+
+                document.getElementById('slotTitleDisplay').textContent = `${slot.subject} (${slot.level}, ${slot.day}, ${slot.time})`;
+                
+                const listContainer = document.getElementById('slotStudentList');
+                listContainer.innerHTML = '';
+
+                if (matchingStudents.length === 0) {
+                    listContainer.innerHTML = '<p class="text-gray-500 italic">No students found assigned to this exact slot.</p>';
+                } else {
+                    matchingStudents.forEach(f => {
+                        const matchingSubjects = f.children
+                            .filter(c => c.level.toLowerCase() === level.toLowerCase())
+                            .flatMap(c => 
+                                c.subjects.filter(s => {
+                                    const timeDayKey = getSlotKey(s);
+                                    if (!timeDayKey) return false;
+
+                                    return timeDayKey.day.toLowerCase() === day.toLowerCase() &&
+                                           timeDayKey.time.toLowerCase().replace(/\s/g, '') === time.toLowerCase().replace(/\s/g, '') &&
+                                           timeDayKey.level.toLowerCase() === level.toLowerCase() &&
+                                           timeDayKey.subject.toLowerCase() === subject.toLowerCase() &&
+                                           timeDayKey.type.toLowerCase() === type.toLowerCase();
+                                })
+                                .map(s => `${c.name} (${s.name})`)
+                            )
+                            .join(' / ');
+
+                        listContainer.innerHTML += `
+                            <div class="p-3 border border-gray-200 rounded-lg flex justify-between items-center bg-gray-50">
+                                <div>
+                                    <div class="font-semibold text-sm text-gray-800">${f.parentName}</div>
+                                    <div class="text-xs text-gray-600">${matchingSubjects}</div>
+                                </div>
+                                <button onclick="openStudentAccount(${f.id})" class="text-indigo-600 hover:text-indigo-800 text-xs">View/Edit</button>
+                            </div>
+                        `;
+                    });
+                }
+                document.getElementById('scheduleFilterResult').classList.remove('hidden');
+            }
+        }
+        
+        function clearScheduleFilter() {
+            activeScheduleSlot = null;
+            document.querySelectorAll('.slot-content').forEach(el => el.classList.remove('slot-active'));
+            document.getElementById('scheduleFilterResult').classList.add('hidden');
+        }
+
+        // MODIFIED: Function to render two separate grids
+        function renderScheduleGrid() {
+            const containerWeekdays = document.getElementById('scheduleGridContainer-weekdays');
+            const containerSaturday = document.getElementById('scheduleGridContainer-saturday');
+
+            const weekdayDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Sunday"]; // Include Sunday for alignment, but it will be empty
+            const saturdayDays = ["Saturday"]; 
+            
+            // Pass the specific time slots for each table
+            containerWeekdays.innerHTML = generateGrid(weekdayDays, WEEKDAY_TIMESLOTS);
+            containerSaturday.innerHTML = generateGrid(saturdayDays, SATURDAY_TIMESLOTS);
+
+            // Rerender icons after adding new HTML
+            lucide.createIcons();
+        }
+
+        // MODIFIED: Logic updated to use CLASS_COLORS for styling
+        function generateGrid(daysToDisplay, timeslots) {
+            // Calculate grid columns dynamically
+            const numDataColumns = daysToDisplay.length;
+            const gridStyle = `grid-template-columns: 120px repeat(${numDataColumns}, minmax(100px, 1fr));`;
+
+            let html = `<div class="schedule-grid" style="${gridStyle}">`;
+
+            // 1. Headers (Top Row)
+            html += '<div class="schedule-header">Time / Day</div>';
+            daysToDisplay.forEach(day => {
+                html += `<div class="schedule-header">${day}</div>`;
+            });
+            
+            // 2. Body (Time Slots)
+            timeslots.forEach(time => {
+                // Time Label (Left Column)
+                html += `<div class="time-label">${time.replace('to', '-')}</div>`; 
+                
+                daysToDisplay.forEach(day => {
+                    // Filter SCHEDULE_DATA for the current day and time
+                    const slots = SCHEDULE_DATA.filter(s => s.day === day && s.time === time);
+                    
+                    if (slots.length > 0) {
+                        html += `<div class="schedule-cell flex flex-col gap-1 p-1">`;
+                        slots.forEach(slot => {
+                            const studentCount = getStudentsInSlot(slot).length;
+                            // Reconstruct the slot key based on the full format for comparison
+                            const slotKey = `${day}, ${time} - ${slot.type} - ${slot.level} ${slot.subject}`;
+                            const isActive = activeScheduleSlot === slotKey;
+                            
+                            // Determine Color
+                            const colorClass = getClassColor(slot.level, slot.subject);
+
+                            // Create unique arguments string for onclick
+                            const args = `'${day}', '${time}', '${slot.level}', '${slot.subject}', '${slot.type}', this`;
+                            
+                            // Determine display type abbreviation
+                            const typeAbbr = slot.type.charAt(0);
+
+                            html += `
+                                <div onclick="handleSlotClick(${args})" 
+                                     class="slot-content rounded ${colorClass.bg} ${colorClass.text} ${isActive ? 'slot-active' : ''}">
+                                    <div class="slot-title">${slot.subject}</div>
+                                    <div class="slot-level">${slot.level} (${typeAbbr})</div>
+                                    <div class="text-[10px] font-bold ${studentCount > 0 ? 'text-green-700' : 'text-red-500'}">${studentCount} Student(s)</div>
+                                </div>
+                            `;
+                        });
+                        html += `</div>`;
+                    } else {
+                        // Empty slot
+                        html += `<div class="schedule-cell bg-white border border-gray-100">-</div>`;
+                    }
+                });
+            });
+
+            html += '</div>';
+            return html;
+        }
+
+        // --- SORTING LOGIC ---
+        function sortTable(key) {
+            if (currentSortKey === key) {
+                sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSortKey = key;
+                sortDirection = 'asc';
+            }
+            renderTable();
+        }
+
+        // Helper to get the total fee for sorting
+        function calculateTotalFee(family) {
+            let total = 0;
+            family.children.forEach(c => {
+                if(c.subjects) {
+                    c.subjects.forEach(s => total += (parseFloat(s.fee) || 0));
+                }
+            });
+            return total;
+        }
+
+        // --- STATUS AUTOMATION LOGIC ---
+
+        function parseLastPaidDate(note) {
+            if (!note) return null;
+            note = note.toLowerCase().trim();
+            
+            const isoMatch = note.match(/\d{4}-\d{2}-\d{2}/);
+            if (isoMatch) return new Date(isoMatch[0]);
+
+            const shortDateMatch = note.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+            if (shortDateMatch) {
+                try {
+                    const [full, month, day, year] = shortDateMatch;
+                    const fullYear = year.length === 2 ? (parseInt(year) > 50 ? 1900 + parseInt(year) : 2000 + parseInt(year)) : parseInt(year);
+                    return new Date(Date.UTC(fullYear, parseInt(month) - 1, parseInt(day)));
+                } catch (e) {
+                    // Ignore parsing error
+                }
+            }
+
+            if (note.includes('paid') || note.includes('yes') || note.includes('package') || note.includes('jan') || note.includes('feb')) {
+                const monthYearMatch = note.match(/([a-z]{3,})[\s\-]*(\d{4}|\d{2})/);
+                if (monthYearMatch) {
+                    try {
+                        const monthName = monthYearMatch[1].substring(0, 3);
+                        const yearStr = monthYearMatch[2].length === 2 ? '20' + monthYearMatch[2] : monthYearMatch[2];
+                        const dateString = `${monthName} 1, ${yearStr}`;
+                        return new Date(dateString);
+                    } catch (e) {
+                        // Ignore guessing error
+                    }
+                }
+                return new Date(); // Fallback if paid is mentioned but date unclear
+            }
+
+            return null;
+        }
+
+
+        function checkAndAutoUpdateStatuses() {
+            let changesMade = false;
+            const today = new Date();
+            const currentYear = today.getFullYear();
+            const currentMonth = today.getMonth();
+
+            families = families.map(f => {
+                let updated = { ...f };
+
+                // 1. Package Expiry Check
+                if (updated.isPackage && updated.packageEndDate) {
+                    const packageEnd = new Date(updated.packageEndDate);
+                    
+                    const expiryDate = new Date(updated.packageEndDate); 
+                    const nextMonth = new Date(today.getFullYear(), today.getMonth()); 
+                    
+                    if (nextMonth > expiryDate) {
+                        if (updated.paid === true) {
+                            updated.paid = false;
+                            updated.paymentNote = `PACKAGE EXPIRED (${packageEnd.toLocaleDateString('en-SG', { year: 'numeric', month: 'short' })}). Payment due.`;
+                            changesMade = true;
+                        }
+                    }
+                    return updated; // Skip monthly reset for package accounts
+                }
+                
+                // 2. Monthly Auto-Reset Check (Only for non-package accounts)
+                if (updated.paid === true && !updated.isPackage) {
+                    const lastPaidDate = parseLastPaidDate(updated.paymentNote);
+                    
+                    if (lastPaidDate) {
+                        const paidYear = lastPaidDate.getFullYear();
+                        const paidMonth = lastPaidDate.getMonth();
+
+                        // Logic: If the payment date is before the current month
+                        if (currentYear > paidYear || (currentYear === paidYear && currentMonth > paidMonth)) {
+                            updated.paid = false;
+                            updated.paymentNote = `UNPAID for ${today.toLocaleDateString('en-SG', { year: 'numeric', month: 'short' })}. Last paid: ${lastPaidDate.toLocaleDateString('en-SG', { year: 'numeric', month: 'short' })}`;
+                            changesMade = true;
+                        }
+                    }
+                }
+                
+                return updated;
+            });
+
+            if (changesMade) {
+                // If automated changes were made, save the data immediately
+                saveData();
+            }
+        }
+        // --- END STATUS AUTOMATION LOGIC ---
+
+        function populateFilterOptions(filterId, options) {
+            const filter = document.getElementById(filterId);
+            const defaultText = filter.querySelector('option[value="All"]').textContent;
+            filter.innerHTML = '';
+            const defaultOption = document.createElement('option');
+            defaultOption.value = 'All';
+            defaultOption.textContent = defaultText;
+            filter.appendChild(defaultOption);
+            
+            options.forEach(opt => {
+                const option = document.createElement('option');
+                option.value = opt;
+                option.textContent = opt;
+                filter.appendChild(option);
+            });
+            if (filterId === 'levelFilter' || filterId === 'subjectFilter') {
+                const option = document.createElement('option');
+                option.value = 'Other';
+                option.textContent = 'Other';
+                filter.appendChild(option);
+            }
+        }
+        
+        function clearAllFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('statusFilter').value = 'All';
+            document.getElementById('invoiceFilter').value = 'All';
+            document.getElementById('levelFilter').value = 'All';
+            document.getElementById('subjectFilter').value = 'All';
+            document.getElementById('worksheetFilter').value = 'All';
+            document.getElementById('dayFilter').value = 'All';
+            document.getElementById('packageFilter').value = 'All';
+            document.getElementById('trialFilter').value = 'All'; 
+            renderTable();
+        }
+
+        // --- CSV PARSING LOGIC ---
+        function parseAllCSVData() {
+            const familyMap = new Map(); 
+
+            const getOrCreateFamily = (key, parentName, contact, email) => {
+                const safeKey = key || parentName || "UNKNOWN";
+                if (!familyMap.has(safeKey)) {
+                    familyMap.set(safeKey, {
+                        id: Date.now() + Math.floor(Math.random() * 10000),
+                        parentName: parentName || "Unknown Parent",
+                        bankAccountName: "", 
+                        contact: contact || "",
+                        email: email || "",
+                        paid: false,
+                        invoiceSent: false,
+                        worksheetOrdered: false, 
+                        isPackage: false, 
+                        packageEndDate: null, 
+                        isTrial: false, 
+                        paymentNote: "",
+                        remarks: "",
+                        children: []
+                    });
+                }
+                const fam = familyMap.get(safeKey);
+                if (!fam.contact && contact) fam.contact = contact;
+                if (!fam.email && email) fam.email = email;
+                if (fam.worksheetOrdered === undefined) fam.worksheetOrdered = false;
+                if (fam.isPackage === undefined) fam.isPackage = false;
+                if (fam.packageEndDate === undefined) fam.packageEndDate = null;
+                if (fam.isTrial === undefined) fam.isTrial = false; 
+                if (fam.bankAccountName === undefined) fam.bankAccountName = ""; 
+                return fam;
+            };
+
+            const splitCSV = (str) => {
+                const matches = str.matchAll(/(?:^|,)("(?:[^"]|"")*"|[^,]*)/g);
+                return Array.from(matches).map(m => m[1].replace(/^"|"$/g, '').replace(/""/g, '"')).slice(0, -1);
+            };
+
+            const parseStandardFormat = (csvId) => {
+                const raw = document.getElementById(csvId).textContent.trim();
+                const lines = raw.split('\n').filter(l => l.trim().length > 0);
+                
+                for(let i=1; i<lines.length; i++) {
+                    const cols = splitCSV(lines[i]);
+                    if (cols.length < 5) continue;
+
+                    const paidStatus = cols[0] || "";
+                    const expiryRemark = cols[1] || "";
+                    const mode = cols[3] || "Online";
+                    const studentName = cols[4] || "Unknown";
+                    const parentName = cols[5] || cols[4] + " Parent";
+                    const contact = cols[6] || "";
+                    const email = cols[7] || "";
+                    const level = cols[8] || "";
+                    const mathDay = cols[9] || "";
+                    const sciDay = cols[10] || "";
+                    const explicitFee = parseFloat(cols[12]) || 0;
+
+                    const key = contact.replace(/\D/g, '') || parentName;
+                    
+                    const fam = getOrCreateFamily(key, parentName, contact, email);
+                    
+                    if (paidStatus.toLowerCase().includes('yes') || paidStatus.toLowerCase().includes('paid') || paidStatus.toLowerCase().includes('package')) {
+                        fam.paid = true;
+                        fam.paymentNote = paidStatus;
+                    }
+                    
+                    if (paidStatus.toLowerCase().includes('trial') || expiryRemark.toLowerCase().includes('trial')) {
+                        fam.isTrial = true;
+                    }
+                    if (paidStatus.toLowerCase().includes('wont continue') || paidStatus.toLowerCase().includes('withdraw')) {
+                        fam.remarks += " [WITHDRAWN]";
+                    }
+                    if (paidStatus.toLowerCase().includes('package')) {
+                        fam.isPackage = true;
+                        const expiryMatch = expiryRemark.match(/(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|)\s*(\d{4}|\d{2})/i);
+                        if (expiryMatch) {
+                            let monthStr = expiryMatch[0].match(/([a-z]{3,})/i) ? expiryMatch[0].match(/([a-z]{3,})/i)[1] : 'Dec';
+                            let yearStr = expiryMatch[1].length === 2 ? '20' + expiryMatch[1] : expiryMatch[1];
+                            const date = new Date(`${monthStr} 28, ${yearStr}`);
+                            if (!isNaN(date)) {
+                                fam.packageEndDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                            }
+                        }
+                    }
+
+                    const studentLevel = level.trim().replace('Primary ', 'P');
+                    
+                    // --- MODIFIED LOGIC: Use getRate for initial fee unless explicit fee is present ---
+                    let subjectDefaultRate = getRate(studentLevel, mode);
+                    
+                    const subjects = [];
+                    
+                    const processSubject = (subject, day) => {
+                        if (day && day.toLowerCase() !== 'xx') {
+                            let dayString = day.includes('(') ? day.substring(0, day.indexOf('(')).trim() : day.trim();
+                            
+                            // Simple assumption for old data: we must find a scheduled slot to prevent mismatch
+                            let assumedTime = '';
+                            
+                            // Find the first matching slot in our new SCHEDULE_DATA 
+                            const matchingSlot = SCHEDULE_DATA.find(slot => 
+                                slot.day.toLowerCase().startsWith(dayString.toLowerCase().substring(0, 3)) && 
+                                slot.subject.toLowerCase() === subject.toLowerCase() &&
+                                slot.level.toLowerCase() === studentLevel.toLowerCase() &&
+                                slot.type.toLowerCase() === mode.toLowerCase() // Also try to match mode
+                            );
+
+                            if (matchingSlot) {
+                                // Construct the precise timeDay string from the schedule definition
+                                subjects.push({ 
+                                    name: `${subject}`, 
+                                    mode: mode, 
+                                    timeDay: `${matchingSlot.day}, ${matchingSlot.time} - ${matchingSlot.type} - ${matchingSlot.level} ${matchingSlot.subject}`, 
+                                    fee: subjectDefaultRate 
+                                });
+                            } else {
+                                // Fallback for old data that doesn't perfectly match new slots
+                                subjects.push({ 
+                                    name: `${subject} (Unscheduled)`, 
+                                    mode: mode, 
+                                    timeDay: '', // Leave timeDay blank if we can't map it to a valid slot
+                                    fee: subjectDefaultRate 
+                                });
+                            }
+                        }
+                    };
+
+                    if (explicitFee > 0) {
+                        subjects.push({ name: "Tuition Fee (Override)", mode: mode, timeDay: '', fee: explicitFee });
+                    } else {
+                        // Math and Science are primary subjects, check if they exist
+                        if (mathDay && mathDay.toLowerCase() !== 'xx') {
+                           processSubject("Math", mathDay);
+                        }
+                        if (sciDay && sciDay.toLowerCase() !== 'xx') {
+                           processSubject("Science", sciDay);
+                        }
+                        
+                        if (!mathDay && !sciDay) {
+                            // Only set a general tuition subject if no specific subject days were found
+                            if (subjects.length === 0) {
+                                subjects.push({ name: "General Tuition", mode: mode, timeDay: '', fee: subjectDefaultRate });
+                            }
+                        }
+                    }
+                    // --- END MODIFIED LOGIC ---
+
+                    fam.children.push({
+                        name: studentName,
+                        level: studentLevel, 
+                        subjects: subjects
+                    });
+                }
+            };
+
+            const parsePackageFormat = () => {
+                const raw = document.getElementById('csv-packages').textContent.trim();
+                const lines = raw.split('\n').filter(l => l.trim().length > 0);
+                
+                for(let i=0; i<lines.length; i++) {
+                    const cols = splitCSV(lines[i]);
+                    if (cols.length < 5) continue;
+                    
+                    const feeStr = (cols[6] || "").replace(/[^0-9.]/g, '');
+                    const fee = parseFloat(feeStr);
+
+                    if (fee > 0) {
+                        const parentName = cols[2];
+                        const duration = cols[3];
+                        const subjectDesc = cols[4];
+                        
+                        if (!parentName) continue;
+
+                        let match = null;
+                        for (let [k, val] of familyMap) {
+                            if (val.parentName.toLowerCase().includes(parentName.toLowerCase().split('(')[0].trim())) {
+                                match = val;
+                                break;
+                            }
+                        }
+
+                        if (match) {
+                            match.paymentNote = `Package: ${duration}`;
+                            match.remarks += ` | Package Fee: $${fee} for ${subjectDesc}`;
+                            match.isPackage = true;
+                        } else {
+                            const fam = getOrCreateFamily(parentName, parentName, "", "");
+                            fam.paymentNote = `Package: ${duration}`;
+                            fam.isPackage = true;
+                            fam.children.push({
+                                name: "Student (Package)",
+                                level: "",
+                                subjects: [{ name: subjectDesc, mode: "Package", timeDay: '', fee: fee }]
+                            });
+                        }
+                    }
+                }
+            };
+
+            const parseWithdrawal = () => {
+                const raw = document.getElementById('csv-withdrawal').textContent.trim();
+                const lines = raw.split('\n');
+                for(let i=1; i<lines.length; i++) {
+                    const cols = splitCSV(lines[i]);
+                    if (cols.length < 5) continue;
+                    const phone = (cols[6]||"").replace(/\D/g, '');
+                    const parent = cols[5];
+
+                    const key = phone || parent;
+                    if(familyMap.has(key)) {
+                        familyMap.get(key).paymentNote += " [WITHDRAWN]";
+                        familyMap.get(key).paid = true;
+                    }
+                }
+            }
+
+            parseStandardFormat('csv-new-2026');
+            parseStandardFormat('csv-old-batch');
+            parsePackageFormat();
+            parseWithdrawal();
+
+            families = Array.from(familyMap.values());
+            saveData();
+        }
+        // --- END CSV PARSING LOGIC ---
+
+        // --- FEE RATE LOGIC (NEW HELPER) ---
+        function getRate(level, mode) {
+            const isSec1 = level && level.toLowerCase().includes('sec 1');
+            const isPhysical = mode === 'Physical';
+            
+            if (isSec1) {
+                // Use settings, fallback to hardcoded default if settings value is zero/invalid
+                return isPhysical ? (appSettings.sec1PhysicalRate || 170) : (appSettings.sec1OnlineRate || 140);
+            } else {
+                // Use settings, fallback to hardcoded default if settings value is zero/invalid
+                return isPhysical ? (appSettings.physicalRate || 150) : (appSettings.onlineRate || 128);
+            }
+        }
+        
+        // --- NEW: Function to force update fees on all existing records ---
+        function updateAllSubjectFees(familyList, settings) {
+             let changed = false;
+             familyList.forEach(f => {
+                 f.children.forEach(c => {
+                     if (c.subjects) {
+                         c.subjects = c.subjects.map(s => {
+                             // Only update non-package, non-override subjects
+                             const isOverride = s.name.toLowerCase().includes('(override)'); 
+                             if (s.mode !== 'Package' && !isOverride) {
+                                 const newRate = getRate(c.level, s.mode);
+                                 if (s.fee !== newRate) {
+                                     s.fee = newRate;
+                                     changed = true;
+                                 }
+                             }
+                             // Ensure timeDay field exists for old data
+                             if (s.timeDay === undefined) {
+                                 s.timeDay = ''; // Set sensible default
+                                 changed = true;
+                             }
+                             return s;
+                         });
+                     }
+                 });
+             });
+             if (changed) {
+                 saveData();
+             }
+        }
+        // --- END NEW RATE UPDATE LOGIC ---
+        // --- END FEE RATE LOGIC ---
+
+        // --- APP LOGIC ---
+
+        function saveData() {
+            localStorage.setItem('tuition_families_v6', JSON.stringify(families));
+            renderTable();
+            // Ensure the schedule view is also updated if active
+            if (currentPage === 'schedule') {
+                renderScheduleGrid();
+                clearScheduleFilter(); // Re-run this to update student counts
+            }
+        }
+
+        function loadSettings() {
+            const saved = localStorage.getItem('appSettings');
+            if (saved) appSettings = JSON.parse(saved);
+
+            // Populate settings modal inputs
+            if (document.getElementById('settingsUen')) {
+                document.getElementById('settingsUen').value = appSettings.uen;
+                document.getElementById('settingsMerchant').value = appSettings.merchant;
+                document.getElementById('settingsBankName').value = appSettings.bankAccountName; 
+                document.getElementById('settingsOnlineRate').value = appSettings.onlineRate || 128;
+                document.getElementById('settingsPhysicalRate').value = appSettings.physicalRate || 150;
+                // NEW Sec 1 Rates
+                document.getElementById('settingsSec1OnlineRate').value = appSettings.sec1OnlineRate || 140;
+                document.getElementById('settingsSec1PhysicalRate').value = appSettings.sec1PhysicalRate || 170;
+            }
+        }
+
+        function saveSettings() {
+            const uen = document.getElementById('settingsUen').value;
+            const merchant = document.getElementById('settingsMerchant').value;
+            const bankName = document.getElementById('settingsBankName').value; 
+            const online = document.getElementById('settingsOnlineRate').value;
+            const physical = document.getElementById('settingsPhysicalRate').value;
+            // NEW Sec 1 Rates
+            const sec1Online = document.getElementById('settingsSec1OnlineRate').value;
+            const sec1Physical = document.getElementById('settingsSec1PhysicalRate').value;
+            
+            if(!uen) return alert("UEN/Mobile is required");
+            
+            const oldSettings = { ...appSettings };
+
+            appSettings = { 
+                uen, 
+                merchant,
+                bankAccountName: bankName, 
+                onlineRate: parseFloat(online) || 0,
+                physicalRate: parseFloat(physical) || 0,
+                // NEW Sec 1 Rates
+                sec1OnlineRate: parseFloat(sec1Online) || 0,
+                sec1PhysicalRate: parseFloat(sec1Physical) || 0
+            };
+            
+            localStorage.setItem('appSettings', JSON.stringify(appSettings));
+            
+            // --- NEW: Re-run fee update if rates actually changed ---
+            if (oldSettings.onlineRate !== appSettings.onlineRate ||
+                oldSettings.physicalRate !== appSettings.physicalRate ||
+                oldSettings.sec1OnlineRate !== appSettings.sec1OnlineRate ||
+                oldSettings.sec1PhysicalRate !== appSettings.sec1PhysicalRate) {
+                
+                updateAllSubjectFees(families, appSettings);
+            }
+            // --------------------------------------------------------
+            
+            closeSettings();
+        }
+
+        // --- Selection & Batch Logic ---
+        function toggleSelectAll(checkbox) {
+            const visibleRows = document.querySelectorAll('#familyTableBody tr');
+            const isChecked = checkbox.checked;
+            
+            selectedIds.clear();
+            if(isChecked) {
+                visibleRows.forEach(row => {
+                    const id = parseInt(row.getAttribute('data-id'));
+                    if(id) selectedIds.add(id);
+                });
+            }
+            renderTable(false);
+        }
+
+        function toggleSelect(id) {
+            if(selectedIds.has(id)) {
+                selectedIds.delete(id);
+            } else {
+                selectedIds.add(id);
+            }
+            renderTable(false);
+        }
+
+        function clearSelection() {
+            selectedIds.clear();
+            renderTable();
+        }
+
+        function startBatch() {
+            if(selectedIds.size === 0) return alert("Please select families first");
+            batchQueue = families.filter(f => selectedIds.has(f.id));
+            if(batchQueue.length === 0) return;
+            currentBatchIndex = 0;
+            openQrModal(batchQueue[0].id, false, true); 
+        }
+
+        function nextBatchItem() {
+            if(currentBatchIndex < batchQueue.length - 1) {
+                currentBatchIndex++;
+                openQrModal(batchQueue[currentBatchIndex].id, false, true);
+            } else {
+                alert("Batch sending completed! All selected accounts have been processed.");
+                closeQrModal();
+                clearSelection();
+            }
+        }
+
+        function skipBatchItem() {
+            if(confirm(`Skip ${currentQrFamily.parentName}? This account will be removed from the current batch.`)) {
+                nextBatchItem();
+            }
+        }
+
+        // --- Export Feature ---
+        function exportData() {
+            const now = new Date();
+            const filename = `TuitionData_${now.toISOString().slice(0,10)}.html`;
+            let htmlContent = document.documentElement.outerHTML;
+            
+            const dataString = JSON.stringify(families);
+            
+            const scriptToInject = `
+                let families = ${dataString};
+                // Override loadData to ignore CSV parsing in export
+                document.addEventListener('DOMContentLoaded', () => {
+                    // families already loaded
+                    loadLogo(); // Load logo in export file
+                    loadSettings();
+                    setPage(currentPage);
+                    lucide.createIcons();
+                });
+            `;
+            
+            // Safely replace the initialization of families and the CSV parsing call
+            htmlContent = htmlContent.replace(/let families = \[\];/, scriptToInject);
+            htmlContent = htmlContent.replace(/parseAllCSVData\(\);/, '// Parsed data already loaded');
+
+
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.click();
+        }
+
+        // --- Filtering and Rendering ---
+        function renderTable(resetSelection = true) {
+            // Only render if we are on the accounts page
+            if (currentPage !== 'accounts') return; 
+
+            const tbody = document.getElementById('familyTableBody');
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const invoiceFilter = document.getElementById('invoiceFilter').value;
+            const levelFilter = document.getElementById('levelFilter').value;
+            const subjectFilter = document.getElementById('subjectFilter').value;
+            const worksheetFilter = document.getElementById('worksheetFilter').value;
+            const dayFilter = document.getElementById('dayFilter').value;
+            const packageFilter = document.getElementById('packageFilter').value;
+            const trialFilter = document.getElementById('trialFilter').value; 
+            
+            tbody.innerHTML = '';
+
+            // --- BEGIN: Filter Check & Badge Generation (Executed ONCE) ---
+            let filtersActive = false;
+            let criteriaHtml = '';
+
+            // Helper to add badge HTML
+            const addBadge = (label, value, color) => {
+                filtersActive = true;
+                criteriaHtml += `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${color}">
+                    <i data-lucide="tag" class="w-3 h-3 mr-1"></i> ${label}: ${value}
+                </span>`;
+            };
+
+            // Check Control Values to build the display badges
+            if (search.trim() !== '') {
+                addBadge('Search', search, 'bg-blue-100 text-blue-700');
+            }
+            if (statusFilter !== 'All') {
+                addBadge('Payment', statusFilter, statusFilter === 'Paid' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700');
+            }
+            if (invoiceFilter !== 'All') {
+                addBadge('Invoice', invoiceFilter, invoiceFilter === 'Sent' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700');
+            }
+            if (worksheetFilter !== 'All') {
+                addBadge('Worksheet', worksheetFilter === 'Ordered' ? 'Yes' : 'No', 'bg-purple-100 text-purple-700');
+            }
+            if (packageFilter !== 'All') {
+                addBadge('Type', packageFilter, 'bg-yellow-100 text-yellow-700');
+            }
+            if (trialFilter !== 'All') {
+                addBadge('Trial', trialFilter, 'bg-red-100 text-red-700');
+            }
+            if (levelFilter !== 'All') {
+                addBadge('Level', levelFilter, 'bg-pink-100 text-pink-700');
+            }
+            if (subjectFilter !== 'All') {
+                addBadge('Subject', subjectFilter, 'bg-teal-100 text-teal-700');
+            }
+            if (dayFilter !== 'All') {
+                addBadge('Day', dayFilter, 'bg-orange-100 text-orange-700');
+            }
+
+            // Update Filter Display UI
+            const displayContainer = document.getElementById('activeFiltersDisplay');
+            const badgesContainer = document.getElementById('filterCriteriaBadges');
+            
+            badgesContainer.innerHTML = criteriaHtml;
+            if (filtersActive) {
+                displayContainer.classList.remove('hidden');
+            } else {
+                displayContainer.classList.add('hidden');
+            }
+            lucide.createIcons(); 
+            // --- END: Filter Check & Badge Generation ---
+
+
+            // 1. Filter Data 
+            let studentCount = 0;
+            let filtered = families.filter(f => {
+                const searchMatch = 
+                    f.parentName.toLowerCase().includes(search) || 
+                    (f.contact || '').includes(search) ||
+                    (f.email || '').toLowerCase().includes(search) ||
+                    (f.bankAccountName || '').toLowerCase().includes(search) ||
+                    f.children.some(c => c.name.toLowerCase().includes(search));
+                
+                let statusMatch = true;
+                if(statusFilter === 'Paid') statusMatch = f.paid;
+                if(statusFilter === 'Unpaid') statusMatch = !f.paid;
+
+                let invoiceMatch = true;
+                if(invoiceFilter === 'Sent') invoiceMatch = f.invoiceSent === true;
+                if(invoiceFilter === 'Not Sent') invoiceMatch = !f.invoiceSent;
+                
+                let worksheetMatch = true;
+                if(worksheetFilter === 'Ordered') worksheetMatch = f.worksheetOrdered === true;
+                if(worksheetFilter === 'Not Ordered') worksheetMatch = !f.worksheetOrdered;
+                
+                let packageMatch = true;
+                if(packageFilter === 'Package') packageMatch = f.isPackage === true;
+                if(packageFilter === 'Non-Package') packageMatch = !f.isPackage;
+
+                let trialMatch = true; 
+                if(trialFilter === 'Trial') trialMatch = f.isTrial === true;
+                if(trialFilter === 'Non-Trial') trialMatch = !f.isTrial;
+
+
+                let levelMatch = true;
+                if (levelFilter !== 'All') {
+                    levelMatch = f.children.some(c => {
+                        const isOther = levelFilter === 'Other' && !LEVELS.includes(c.level);
+                        return c.level === levelFilter || isOther;
+                    });
+                }
+                
+                let subjectMatch = true;
+                if (subjectFilter !== 'All') {
+                    subjectMatch = f.children.some(c => {
+                        return (c.subjects || []).some(s => {
+                            const isOther = subjectFilter === 'Other' && !SUBJECTS.some(sub => s.name.toLowerCase().includes(sub.toLowerCase()));
+                            return s.name.toLowerCase().includes(subjectFilter.toLowerCase()) || isOther;
+                        });
+                    });
+                }
+                
+                let dayMatch = true;
+                if (dayFilter !== 'All') {
+                    const filterDayLower = dayFilter.toLowerCase();
+                    dayMatch = f.children.some(c => {
+                        return (c.subjects || []).some(s => (s.timeDay || s.name).toLowerCase().includes(filterDayLower));
+                    });
+                }
+
+                return searchMatch && statusMatch && invoiceMatch && levelMatch && subjectMatch && worksheetMatch && dayMatch && packageMatch && trialMatch;
+            });
+            
+            // 2. Sort Data (unchanged)
+            filtered.sort((a, b) => {
+                let valA, valB;
+
+                switch (currentSortKey) {
+                    case 'totalFee':
+                        valA = calculateTotalFee(a);
+                        valB = calculateTotalFee(b);
+                        break;
+                    case 'parentName':
+                        valA = a.parentName.toLowerCase();
+                        valB = b.parentName.toLowerCase();
+                        break;
+                    case 'paid':
+                    case 'isPackage':
+                    case 'isTrial': 
+                    case 'invoiceSent':
+                    case 'worksheetOrdered':
+                        valA = a[currentSortKey] ? 1 : 0;
+                        valB = b[currentSortKey] ? 1 : 0;
+                        break;
+                    default:
+                        valA = a.parentName.toLowerCase();
+                        valB = b.parentName.toLowerCase();
+                        break;
+                }
+
+                if (valA < valB) return sortDirection === 'asc' ? -1 : 1;
+                if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
+                return 0;
+            });
+            
+            // 3. Update Sort Indicators in Header (Visual Feedback)
+            document.querySelectorAll('.sort-button i').forEach(icon => {
+                icon.classList.remove('text-indigo-600');
+                icon.classList.add('text-gray-400');
+                icon.setAttribute('data-lucide', 'chevrons-up-down');
+            });
+
+            const currentSortButton = document.querySelector(`.sort-button[onclick="sortTable('${currentSortKey}')"] i`);
+            if (currentSortButton) {
+                currentSortButton.classList.remove('text-gray-400');
+                currentSortButton.classList.add('text-indigo-600');
+                currentSortButton.setAttribute('data-lucide', sortDirection === 'asc' ? 'chevron-up' : 'chevron-down');
+            }
+
+
+            // 4. Render Rows 
+            document.getElementById('family-count').textContent = filtered.length; 
+
+            const batchBar = document.getElementById('batchBar');
+            const selectAllBox = document.getElementById('selectAllCheckbox');
+            
+            if(selectedIds.size > 0) {
+                batchBar.classList.remove('hidden');
+                document.getElementById('batchCount').textContent = selectedIds.size;
+            } else {
+                batchBar.classList.add('hidden');
+                if(selectAllBox) selectAllBox.checked = false;
+            }
+
+            filtered.forEach(f => {
+                studentCount += f.children.length;
+                let totalFee = calculateTotalFee(f);
+                
+                const packageBadge = f.isPackage 
+                    ? `<span class="px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded-full text-[10px] font-bold">Package ${f.packageEndDate ? 'until ' + f.packageEndDate.substring(0, 7) : ''}</span>`
+                    : `<span class="px-2 py-0.5 bg-gray-100 text-gray-500 rounded-full text-[10px] font-bold">Monthly</span>`;
+                
+                const trialBadge = f.isTrial
+                    ? `<span class="px-2 py-0.5 bg-red-100 text-red-800 rounded-full text-[10px] font-bold">TRIAL</span>`
+                    : '';
+
+                const childRows = f.children.map(c => {
+                    // MODIFIED: Show timeDay next to the subject if available
+                    const subjectsText = (c.subjects || []).map(s => {
+                        let text = s.name;
+                        if (s.timeDay) {
+                           // If the subject name already contains the day/time (from old CSV parsing), don't duplicate.
+                           const parts = s.timeDay.split(' - '); // Day, Time - Type - Level Subject
+                           const timeAndClass = parts.length >= 3 ? parts[0].split(',')[1].trim() + ' ' + parts[2] : s.timeDay;
+                           
+                           text = `${text} (${timeAndClass})`;
+
+                        }
+                        return `${text} (${s.mode})`;
+                    }).join(', ');
+
+                    return `
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-sm py-2 border-b border-gray-50 last:border-0">
+                        <div class="flex items-center gap-2 w-full sm:w-48">
+                            <div class="w-5 h-5 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-[10px] font-bold flex-none">
+                                ${c.name.charAt(0)}
+                            </div>
+                            <span class="font-medium text-gray-700 truncate" title="${c.name}">${c.name}</span>
+                            <span class="px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded text-[10px] flex-none">${c.level}</span>
+                        </div>
+                        <span class="text-gray-500 text-xs flex-grow pl-7 sm:pl-0">${subjectsText}</span>
+                    </div>`;
+                }).join('');
+                
+                
+                const tr = document.createElement('tr');
+                tr.className = `hover:bg-gray-50 transition-colors group align-top ${selectedIds.has(f.id) ? 'bg-indigo-50/30' : ''}`;
+                tr.setAttribute('data-id', f.id);
+                
+                tr.innerHTML = `
+                    <td class="p-4 align-middle">
+                        <input type="checkbox" onchange="toggleSelect(${f.id})" ${selectedIds.has(f.id) ? 'checked' : ''} class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                    </td>
+                    <td class="p-4">
+                        <button onclick="togglePaid(${f.id})" 
+                            class="flex flex-col items-center justify-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors w-full border ${f.paid ? 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100' : 'bg-white text-gray-400 border-gray-200 hover:border-red-300 hover:text-red-500'}">
+                            ${f.paid ? '<i data-lucide="check-circle" class="w-5 h-5"></i>' : '<div class="w-5 h-5 rounded-full border-2 border-current"></div>'}
+                            ${f.paid ? 'PAID' : 'UNPAID'}
+                        </button>
+                    </td>
+                    <td class="p-4 align-middle">
+                        ${packageBadge}
+                    </td>
+                    <td class="p-4 align-middle">
+                        ${trialBadge}
+                    </td>
+                    <td class="p-4 align-middle">
+                        <button onclick="toggleInvoiceSent(${f.id})" class="flex items-center gap-2 px-2 py-1 rounded-md text-xs font-medium transition-colors ${f.invoiceSent ? 'text-blue-600 bg-blue-50' : 'text-gray-400 bg-gray-100'}">
+                            ${f.invoiceSent ? '<i data-lucide="send" class="w-4 h-4"></i> Sent' : '<i data-lucide="clock" class="w-4 h-4"></i> Not Sent'}
+                        </button>
+                    </td>
+                    <td class="p-4 align-middle">
+                        <button onclick="toggleWorksheetOrdered(${f.id})" class="flex items-center gap-2 px-2 py-1 rounded-md text-xs font-medium transition-colors ${f.worksheetOrdered ? 'text-purple-600 bg-purple-50' : 'text-gray-400 bg-gray-100'}">
+                            ${f.worksheetOrdered ? '<i data-lucide="file-check" class="w-4 h-4"></i> Yes' : '<i data-lucide="file-text" class="w-4 h-4"></i> No'}
+                        </button>
+                    </td>
+                    <td class="p-4">
+                        <div class="font-bold text-gray-900 text-base">${f.parentName}</div>
+                        <div class="text-xs text-gray-400 font-medium uppercase mt-1 tracking-wide">${f.children.length} Student(s)</div>
+                    </td>
+                    <td class="p-4">
+                        <div class="bg-white border border-gray-100 rounded-lg p-2 shadow-sm min-w-[250px]">
+                            ${childRows}
+                        </div>
+                    </td>
+                    <td class="p-4">
+                        <div class="font-bold text-lg text-gray-800">$${totalFee.toFixed(2)}</div>
+                    </td>
+                    <td class="p-4 text-sm space-y-1">
+                        ${f.contact ? `<div class="flex items-center gap-2 text-gray-600"><i data-lucide="phone" class="w-3 h-3 text-gray-400"></i> ${f.contact}</div>` : ''}
+                        ${f.email ? `<div class="flex items-center gap-2 text-gray-600"><i data-lucide="mail" class="w-3 h-3 text-gray-400"></i> ${f.email}</div>` : ''}
+                        ${f.bankAccountName ? `<div class="mt-2 text-xs bg-gray-50 text-gray-700 p-1.5 rounded border border-gray-100">Bank Name: ${f.bankAccountName}</div>` : ''}
+                        ${f.paymentNote ? `<div class="mt-2 text-xs bg-yellow-50 text-yellow-700 p-1.5 rounded border border-yellow-100">${f.paymentNote}</div>` : ''}
+                    </td>
+                    <td class="p-4 text-right">
+                        <div class="flex flex-col gap-2 items-end">
+                            <div class="flex gap-2 w-full">
+                                <button onclick="openQrModal(${f.id}, true)" class="p-2 bg-green-500 hover:bg-green-600 text-white rounded-md transition-colors shadow-sm flex-1 flex justify-center gap-1 text-xs font-bold items-center" title="Send WhatsApp">
+                                    <i data-lucide="message-circle" class="w-4 h-4"></i> WhatsApp
+                                </button>
+                                <button onclick="openQrModal(${f.id}, false)" class="p-2 text-white bg-indigo-600 hover:bg-indigo-700 rounded-md transition-colors shadow-sm flex-none flex justify-center gap-1 text-xs font-bold items-center" title="Generate Invoice">
+                                    <i data-lucide="receipt" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                            <div class="flex gap-2 w-full justify-end">
+                                <button onclick="editFamily(${f.id})" class="p-1.5 text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-md"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                                <button onclick="deleteFamily(${f.id})" class="p-1.5 text-red-600 bg-red-50 hover:bg-red-100 rounded-md"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            </div>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            document.getElementById('student-count').textContent = studentCount;
+            lucide.createIcons();
+        }
+
+        function togglePaid(id) {
+            families = families.map(f => {
+                if (f.id === id) {
+                    const newPaidStatus = !f.paid;
+                    if (newPaidStatus) {
+                        const now = new Date();
+                        f.paymentNote = `Paid for ${now.toLocaleDateString('en-SG', { year: 'numeric', month: 'short' })}`;
+                    } else {
+                        if (f.paymentNote && f.paymentNote.includes('PACKAGE EXPIRED')) {
+                            // Keep expiry note
+                        } else {
+                            f.paymentNote = '';
+                        }
+                    }
+                    return { ...f, paid: newPaidStatus };
+                }
+                return f;
+            });
+            saveData();
+        }
+
+        function toggleInvoiceSent(id) {
+            families = families.map(f => f.id === id ? { ...f, invoiceSent: !f.invoiceSent } : f);
+            saveData();
+        }
+        
+        function toggleWorksheetOrdered(id) {
+            families = families.map(f => f.id === id ? { ...f, worksheetOrdered: !f.worksheetOrdered } : f);
+            saveData();
+        }
+
+        function markInvoiceSent(id) {
+            families = families.map(f => f.id === id ? { ...f, invoiceSent: true } : f);
+            saveData();
+        }
+
+        function deleteFamily(id) {
+            if(confirm("Delete this family record?")) {
+                families = families.filter(f => f.id !== id);
+                selectedIds.delete(id);
+                saveData();
+            }
+        }
+
+        // --- Modal & Form Logic ---
+        function openModal(family = null) {
+            const modal = document.getElementById('modal');
+            const form = document.getElementById('familyForm');
+            const container = document.getElementById('childrenContainer');
+            
+            container.innerHTML = '';
+            
+            if (family) {
+                document.getElementById('modalTitle').textContent = "Edit Account";
+                document.getElementById('editId').value = family.id;
+                form.elements['parentName'].value = family.parentName;
+                form.elements['bankAccountName'].value = family.bankAccountName || ''; 
+                form.elements['contact'].value = family.contact || '';
+                form.elements['email'].value = family.email || '';
+                form.elements['paymentNote'].value = family.paymentNote || '';
+                form.elements['remarks'].value = family.remarks || '';
+                
+                // Package/Trial fields
+                document.getElementById('isPackage').checked = family.isPackage;
+                document.getElementById('packageEndDate').value = family.packageEndDate || '';
+                document.getElementById('isTrial').checked = family.isTrial; 
+                
+                family.children.forEach(c => addChildRow(c));
+            } else {
+                document.getElementById('modalTitle').textContent = "Add New Account";
+                form.reset();
+                document.getElementById('editId').value = "";
+                // Package/Trial fields (Default state)
+                document.getElementById('isPackage').checked = false;
+                document.getElementById('packageEndDate').value = '';
+                document.getElementById('isTrial').checked = false; 
+                form.elements['bankAccountName'].value = ''; 
+                
+                addChildRow(); 
+            }
+            
+            modal.classList.remove('hidden');
+            document.body.classList.add('modal-active');
+            recalcModalTotal();
+            lucide.createIcons();
+        }
+        
+        // Helper function to update all subject fees in a row based on the new level
+        function updateRowFees(childRowElement) {
+            const level = childRowElement.querySelector('[name="childLevel"]').value;
+            const subjectRows = childRowElement.querySelectorAll('.subject-row');
+            
+            subjectRows.forEach(row => {
+                const mode = row.querySelector('[name="subjectMode"]').value;
+                const feeInput = row.querySelector('[name="subjectFee"]');
+                // When level changes, reset fee to calculated default rate
+                feeInput.value = getRate(level, mode);
+            });
+            recalcModalTotal();
+        }
+
+        function addChildRow(data = null) {
+            const template = document.getElementById('childRowTemplate');
+            const clone = template.content.cloneNode(true);
+            const container = document.getElementById('childrenContainer');
+            const childRow = clone.querySelector('.child-row');
+            
+            if (data) {
+                childRow.querySelector('[name="childName"]').value = data.name;
+                childRow.querySelector('[name="childLevel"]').value = data.level;
+                if(data.subjects) {
+                    data.subjects.forEach(s => addSubjectRow(childRow, s));
+                }
+            } else {
+                childRow.querySelector('[name="childLevel"]').value = "P4";
+                addSubjectRow(childRow);
+            }
+            
+            container.appendChild(childRow);
+            lucide.createIcons();
+        }
+
+        function addSubjectRow(childRowElement, data = null) {
+            const template = document.getElementById('subjectRowTemplate');
+            const clone = template.content.cloneNode(true);
+            const subjectsContainer = childRowElement.querySelector('.subjects-container');
+            
+            // Get student's level to determine the default rate
+            const level = childRowElement.querySelector('[name="childLevel"]').value;
+            const defaultMode = data ? data.mode : "Online";
+            const defaultRate = data ? data.fee : getRate(level, defaultMode); 
+            
+            const subjectSelect = clone.querySelector('[name="subjectTimeDay"]');
+            
+            // --- MODIFIED: Populate the subjectTimeDay dropdown with structured Optgroups ---
+            subjectSelect.innerHTML = '<option value="">-- Select Day & Time --</option>';
+            DAYS.forEach(day => {
+                const dayOptions = SCHEDULE_OPTIONS_MAP[day] || [];
+                if (dayOptions.length > 0) {
+                    const optgroup = document.createElement('optgroup');
+                    optgroup.label = day.toUpperCase();
+                    
+                    dayOptions.forEach(option => {
+                        const opt = document.createElement('option');
+                        opt.value = option;
+                        // Format the display text to only show Time and Class Info (Day is in the Optgroup label)
+                        // Value format: "Day, Time - Type - Level Subject"
+                        // Parts[0] = "Day, Time", Parts[1] = "Type", Parts[2] = "Level Subject"
+                        const displayParts = option.split(' - '); 
+                        const timeOnly = displayParts[0].split(',')[1].trim(); 
+                        const classInfo = displayParts[2];
+                        // Display format: "Time | Level Subject (Type)"
+                        const typeOnly = displayParts[1].trim();
+                        opt.textContent = `${timeOnly} | ${classInfo} (${typeOnly})`;
+                        
+                        optgroup.appendChild(opt);
+                    });
+                    subjectSelect.appendChild(optgroup);
+                }
+            });
+            // --- END MODIFIED DROPDOWN POPULATION ---
+
+
+            if(data) {
+                clone.querySelector('[name="subjectName"]').value = data.name;
+                clone.querySelector('[name="subjectMode"]').value = data.mode;
+                clone.querySelector('[name="subjectFee"]').value = data.fee;
+                // Select the correct option if the data has a matching value
+                if (data.timeDay) {
+                    subjectSelect.value = data.timeDay;
+                    // Note: If the CSV data created a value that is NOT in the SCHEDULE_DATA list,
+                    // we add it as a temporary option so the existing data can be edited.
+                    if (subjectSelect.selectedIndex === 0 && data.timeDay !== "") { 
+                        const customOption = document.createElement('option');
+                        customOption.value = data.timeDay;
+                        customOption.textContent = `[Custom/Old] ${data.timeDay}`;
+                        subjectSelect.appendChild(customOption);
+                        subjectSelect.value = data.timeDay;
+                    }
+                }
+            } else {
+                clone.querySelector('[name="subjectName"]').value = "Subject (e.g. Math)"; 
+                clone.querySelector('[name="subjectMode"]').value = defaultMode;
+                clone.querySelector('[name="subjectFee"]').value = defaultRate; 
+                // Default placeholder is already set as the first option
+            }
+
+            subjectsContainer.appendChild(clone);
+            lucide.createIcons();
+            recalcModalTotal();
+        }
+
+        function updateSubjectFee(selectElement) {
+            const row = selectElement.closest('.subject-row');
+            const childRow = selectElement.closest('.child-row'); 
+            const feeInput = row.querySelector('[name="subjectFee"]');
+            
+            // Check if the change was in mode or timeDay
+            const isModeChange = selectElement.name === 'subjectMode';
+
+            const mode = row.querySelector('[name="subjectMode"]').value;
+            const level = childRow.querySelector('[name="childLevel"]').value; 
+            
+            // Only update fee if mode changed, forcing it to the default rate
+            if (isModeChange) {
+                 feeInput.value = getRate(level, mode); 
+            }
+            // If timeDay changed, we don't automatically update the fee, it stays as is or can be manually adjusted.
+
+            recalcModalTotal();
+        }
+
+        function recalcModalTotal() {
+            let total = 0;
+            const feeInputs = document.querySelectorAll('#childrenContainer input[name="subjectFee"]');
+            feeInputs.forEach(input => total += parseFloat(input.value) || 0);
+            document.getElementById('modalTotalDisplay').textContent = `$${total.toFixed(2)}`;
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const form = e.target;
+            const id = form.querySelector('[name="id"]').value;
+            
+            const existingFamily = families.find(f => f.id === Number(id));
+
+            const parentData = {
+                parentName: form.elements['parentName'].value,
+                bankAccountName: form.elements['bankAccountName'].value, 
+                contact: form.elements['contact'].value,
+                email: form.elements['email'].value,
+                paymentNote: form.elements['paymentNote'].value,
+                remarks: form.elements['remarks'].value,
+                isPackage: form.elements['isPackage'].checked, 
+                packageEndDate: form.elements['packageEndDate'].value || null, 
+                isTrial: form.elements['isTrial'].checked, 
+            };
+            
+            const paidStatus = existingFamily ? existingFamily.paid : false;
+            const invoiceSentStatus = existingFamily ? existingFamily.invoiceSent : false;
+            const worksheetStatus = existingFamily ? existingFamily.worksheetOrdered : false;
+
+
+            const childRows = document.querySelectorAll('.child-row');
+            const children = Array.from(childRows).map(row => {
+                const name = row.querySelector('[name="childName"]').value;
+                const level = row.querySelector('[name="childLevel"]').value;
+                const subjectRows = row.querySelectorAll('.subject-row');
+                const subjects = Array.from(subjectRows).map(sRow => {
+                    const fee = parseFloat(sRow.querySelector('[name="subjectFee"]').value) || 0;
+                    const subjectName = sRow.querySelector('[name="subjectName"]').value;
+                    const mode = sRow.querySelector('[name="subjectMode"]').value;
+                    const timeDay = sRow.querySelector('[name="subjectTimeDay"]').value.trim(); // NEW
+
+                    // Determine if this is a custom (overridden) fee
+                    const defaultRate = getRate(level, mode);
+                    const isCustomFee = Math.abs(fee - defaultRate) > 0.01;
+                    
+                    // Append ' (Override)' to the subject name if the fee is customized
+                    const finalName = isCustomFee && !subjectName.toLowerCase().includes('(override)') 
+                                             ? `${subjectName} (Override)` 
+                                             : subjectName;
+
+                    return {
+                        name: finalName,
+                        mode: mode,
+                        fee: fee,
+                        timeDay: timeDay // NEW
+                    };
+                }).filter(s => s.name.trim().replace(' (Override)', '').trim() !== "");
+
+                return { name, level, subjects };
+            }).filter(c => c.name.trim() !== "");
+
+            if (id) {
+                families = families.map(f => f.id === Number(id) ? { 
+                    ...f, 
+                    ...parentData, 
+                    children 
+                } : f);
+            } else {
+                families = [{ 
+                    id: Date.now(), 
+                    paid: paidStatus, 
+                    invoiceSent: invoiceSentStatus, 
+                    worksheetOrdered: worksheetStatus, 
+                    ...parentData, 
+                    children 
+                }, ...families];
+            }
+
+            saveData(); 
+            closeModal();
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+            document.body.classList.remove('modal-active');
+        }
+        function editFamily(id) {
+            const family = families.find(f => f.id === id);
+            if(family) openModal(family);
+        }
+
+        function openSettings() {
+            document.getElementById('settingsUen').value = appSettings.uen;
+            document.getElementById('settingsMerchant').value = appSettings.merchant;
+            document.getElementById('settingsBankName').value = appSettings.bankAccountName; 
+            document.getElementById('settingsOnlineRate').value = appSettings.onlineRate || 128;
+            document.getElementById('settingsPhysicalRate').value = appSettings.physicalRate || 150;
+            // NEW Sec 1 Rates
+            document.getElementById('settingsSec1OnlineRate').value = appSettings.sec1OnlineRate || 140;
+            document.getElementById('settingsSec1PhysicalRate').value = appSettings.sec1PhysicalRate || 170;
+
+            document.getElementById('settingsModal').classList.remove('hidden');
+        }
+        function closeSettings() {
+            document.getElementById('settingsModal').classList.add('hidden');
+        }
+
+        // --- QR & Invoice Logic ---
+        function openQrModal(id, autoSend = false, isBatch = false) {
+            currentQrFamily = families.find(f => f.id === id);
+            if (!currentQrFamily) return;
+
+            const batchHeader = document.getElementById('batchHeader');
+            const batchControls = document.getElementById('batchControls');
+            const waButton = document.querySelector('#qrModal button[onclick^="openWhatsApp"]');
+            
+            // Reset WhatsApp button to default text/color
+            waButton.innerHTML = `<i data-lucide="message-circle" class="w-5 h-5"></i> <span>Copy Invoice & Open WhatsApp</span>`;
+            waButton.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+            waButton.classList.add('bg-green-500', 'hover:bg-green-600');
+
+            if(isBatch) {
+                batchHeader.classList.remove('hidden');
+                batchControls.classList.remove('hidden');
+                document.getElementById('batchIndexDisplay').textContent = currentBatchIndex + 1;
+                document.getElementById('batchTotalDisplay').textContent = batchQueue.length;
+            } else {
+                batchHeader.classList.add('hidden');
+                batchControls.classList.add('hidden');
+            }
+
+            let total = 0;
+            currentQrFamily.children.forEach(c => {
+                if(c.subjects) c.subjects.forEach(s => total += (parseFloat(s.fee) || 0));
+            });
+
+            document.getElementById('qrRef').value = currentQrFamily.parentName;
+            document.getElementById('qrAmount').value = total;
+
+            document.getElementById('qrModal').classList.remove('hidden');
+            
+            // Redraw invoice immediately
+            redrawInvoice();
+            
+            if(autoSend) {
+                setTimeout(() => openWhatsApp(true), 500);
+            }
+            
+            // Re-render icons inside the modal
+            lucide.createIcons();
+        }
+
+        function closeQrModal() {
+            document.getElementById('qrModal').classList.add('hidden');
+        }
+
+        function redrawInvoice() {
+            if(!currentQrFamily) return;
+            const amount = parseFloat(document.getElementById('qrAmount').value) || 0;
+            const ref = document.getElementById('qrRef').value;
+            const paynowStr = generatePayNowQR(appSettings.uen, amount, ref, appSettings.merchant);
+            
+            const canvas = document.getElementById('invoiceCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Determine dynamic height based on content
+            const headerFooterHeight = 550; // Reserve space for logo, title, PayNow QR, etc.
+            let contentLines = 0;
+            currentQrFamily.children.forEach(c => {
+                contentLines += 1; // Student Name
+                if (c.subjects) contentLines += c.subjects.length;
+                contentLines += 0.5; // Padding
+            });
+
+            const contentHeight = contentLines * 30; // Approx 30px per line
+            const totalHeight = headerFooterHeight + contentHeight;
+            const width = 600;
+
+            canvas.width = width;
+            canvas.height = totalHeight;
+
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, width, totalHeight);
+
+            let y = 0;
+            const padding = 40;
+
+            // --- HEADER: Logo and Title ---
+            ctx.fillStyle = '#4f46e5';
+            ctx.fillRect(0, 0, width, 10);
+            y += 10;
+            
+            if (logoImage && logoImage.complete) {
+                const logoWidth = 180;
+                const logoHeight = logoImage.height * (logoWidth / logoImage.width);
+                const logoX = (width / 2) - (logoWidth / 2);
+                ctx.drawImage(logoImage, logoX, y + 20, logoWidth, logoHeight);
+                y += 20 + logoHeight; 
+
+                ctx.font = 'bold 24px sans-serif';
+                ctx.fillStyle = '#333';
+                ctx.textAlign = 'center';
+                ctx.fillText(appSettings.merchant.toUpperCase(), width/2, y + 30);
+                y += 30;
+
+                ctx.font = '18px sans-serif';
+                ctx.fillStyle = '#666';
+                ctx.fillText("TUITION INVOICE", width/2, y + 20);
+                y += 40;
+            } else {
+                // Text Fallback
+                y += 30;
+                ctx.fillStyle = '#333';
+                ctx.font = 'bold 36px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(appSettings.merchant.toUpperCase(), width/2, y);
+                y += 40;
+                
+                ctx.font = '22px sans-serif';
+                ctx.fillStyle = '#666';
+                ctx.fillText("TUITION INVOICE", width/2, y);
+                y += 40;
+            }
+            
+            // Horizontal Separator Line
+            ctx.beginPath();
+            ctx.moveTo(padding, y);
+            ctx.lineTo(width - padding, y);
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            y += 30;
+
+            // --- Client & Date Details ---
+            ctx.textAlign = 'left';
+            ctx.font = '16px sans-serif';
+            ctx.fillStyle = '#444';
+            ctx.fillText(`Client: ${currentQrFamily.parentName}`, padding, y);
+            
+            const dateStr = new Date().toLocaleDateString('en-SG', { day: 'numeric', month: 'long', year: 'numeric' });
+            ctx.textAlign = 'right';
+            ctx.fillText(`Invoice Date: ${dateStr}`, width - padding, y);
+            y += 30;
+
+            // Horizontal Separator Line
+            ctx.beginPath();
+            ctx.moveTo(padding, y);
+            ctx.lineTo(width - padding, y);
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            y += 20;
+
+
+            // --- Content: Students and Subjects ---
+            ctx.textAlign = 'left';
+
+            currentQrFamily.children.forEach(c => {
+                ctx.font = 'bold 18px sans-serif';
+                ctx.fillStyle = '#333';
+                ctx.fillText(`${c.name} (${c.level})`, padding, y);
+                y += 30;
+
+                if(c.subjects && c.subjects.length > 0) {
+                    ctx.font = '16px sans-serif';
+                    ctx.fillStyle = '#555';
+                    c.subjects.forEach(s => {
+                        let subjectInfo = `• ${s.name}`;
+                        
+                        // Add Time/Day and Mode
+                        if (s.timeDay) {
+                            const parts = s.timeDay.split(' - '); // Day, Time - Type - Level Subject
+                            const timeAndClass = parts.length >= 3 ? parts[0].split(',')[1].trim() + ' ' + parts[2] : s.timeDay;
+
+                            // Include the mode from the subject object
+                            subjectInfo += ` (${timeAndClass}, ${s.mode})`;
+                        } else {
+                           subjectInfo += ` (${s.mode})`;
+                        }
+                        
+                        // Add Rate Info
+                        if (s.mode !== 'Package' && parseFloat(s.fee) > 0) {
+                            const assumedRate = getRate(c.level, s.mode);
+                            
+                            // Check if the current fee matches the automatically calculated default rate (allowing for floating point comparison tolerance)
+                            const rateMatchesDefault = Math.abs(parseFloat(s.fee) - assumedRate) < 0.01;
+                            
+                            if (s.name.toLowerCase().includes('(override)')) {
+                                subjectInfo = subjectInfo.replace(/\(Override\)/i, '').trim() + ` (Custom Fee)`;
+                            } else if (rateMatchesDefault) {
+                                subjectInfo += ` (@ $${assumedRate.toFixed(0)}/mth)`;
+                            } else {
+                                // If it doesn't match the current default rate, mark it as custom/old.
+                                subjectInfo += ` (Custom Fee)`;
+                            }
+                        }
+
+                        ctx.fillText(subjectInfo, padding + 20, y);
+                        ctx.textAlign = 'right';
+                        ctx.fillText(`$${parseFloat(s.fee).toFixed(2)}`, width - padding, y);
+                        ctx.textAlign = 'left';
+                        y += 30;
+                    });
+                } else {
+                    ctx.font = 'italic 14px sans-serif';
+                    ctx.fillStyle = '#999';
+                    ctx.fillText("No subjects added / Package fee only", padding + 20, y);
+                    y += 30;
+                }
+                y += 10;
+            });
+
+            // --- Footer: Total and PayNow ---
+            y += 20;
+            ctx.beginPath();
+            ctx.moveTo(padding, y);
+            ctx.lineTo(width-padding, y);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            y += 50;
+            ctx.font = 'bold 36px sans-serif';
+            ctx.fillStyle = '#4f46e5';
+            ctx.textAlign = 'center';
+            ctx.fillText(`TOTAL: $${parseFloat(amount).toFixed(2)}`, width/2, y);
+
+            y += 40;
+            const qrSize = 200;
+            const qr = new QRious({ value: paynowStr, size: qrSize, level: 'M' });
+            const qrImg = new Image();
+            qrImg.src = qr.toDataURL();
+            
+            qrImg.onload = () => {
+                ctx.drawImage(qrImg, (width/2) - (qrSize/2), y);
+                y += qrSize + 20;
+                
+                ctx.font = '14px sans-serif';
+                ctx.fillStyle = '#666';
+                ctx.fillText(`Scan via PayNow / PayLah`, width/2, y);
+                y += 20;
+                
+                ctx.font = 'bold 16px sans-serif';
+                ctx.fillStyle = '#333';
+                ctx.fillText(`Ref: ${ref}`, width/2, y);
+                y += 20;
+                
+                if (appSettings.bankAccountName) {
+                    ctx.font = '14px sans-serif';
+                    ctx.fillStyle = '#444';
+                    ctx.fillText(`Bank Name: ${appSettings.bankAccountName}`, width/2, y);
+                    y += 20;
+                }
+            }
+        }
+
+        // MODIFIED: Function to handle WhatsApp send, clipboard copy, and batch status update
+        async function openWhatsApp(markAsSent = false) {
+            if(!currentQrFamily) return;
+            const canvas = document.getElementById('invoiceCanvas');
+            const phone = currentQrFamily.contact.replace(/\D/g, ''); 
+            const text = encodeURIComponent(`Hi ${currentQrFamily.parentName}, please find the attached tuition invoice.\n\nThank you!`);
+            const waUrl = `https://wa.me/65${phone}?text=${text}`;
+
+            const batchControls = document.getElementById('batchControls');
+            const isBatch = !batchControls.classList.contains('hidden');
+
+            if (markAsSent) markInvoiceSent(currentQrFamily.id);
+
+            const btn = document.querySelector('#qrModal button[onclick^="openWhatsApp"]');
+            const origHtml = btn.innerHTML;
+            
+            try {
+                // Use canvas.toBlob for better image quality and clipboard compatibility
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                
+                // Fallback for environment where navigator.clipboard.write is disallowed or fails
+                await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+                
+                btn.innerHTML = `<i data-lucide="check" class="w-5 h-5"></i> Copied! Opening...`;
+                btn.classList.remove('bg-green-500', 'hover:bg-green-600');
+                btn.classList.add('bg-green-600', 'hover:bg-green-700');
+                lucide.createIcons();
+                
+                setTimeout(() => {
+                    window.open(waUrl, '_blank');
+                    
+                    if (isBatch) {
+                        btn.innerHTML = `<i data-lucide="chevron-right" class="w-5 h-5"></i> Sent & Copied. Click Next.`;
+                        btn.classList.remove('bg-green-600', 'hover:bg-green-700');
+                        btn.classList.add('bg-indigo-600', 'hover:bg-indigo-700'); 
+                        lucide.createIcons();
+                    } else {
+                        setTimeout(() => {
+                            btn.innerHTML = origHtml;
+                            btn.classList.remove('bg-green-600', 'hover:bg-green-700');
+                            closeQrModal(); 
+                        }, 2000);
+                    }
+                }, 1000);
+
+            } catch (err) {
+                console.error("Clipboard failed:", err);
+                if(confirm(`Clipboard access denied. The WhatsApp chat for ${currentQrFamily.parentName} will open. Please click 'Download Image' manually and attach it in the chat.`)) {
+                    downloadQr();
+                    window.open(waUrl, '_blank');
+                    
+                    if (!isBatch) {
+                        setTimeout(() => {
+                            btn.innerHTML = origHtml;
+                            btn.classList.remove('bg-green-600', 'hover:bg-green-700');
+                            closeQrModal(); 
+                        }, 2000);
+                    } else {
+                        btn.innerHTML = `<i data-lucide="chevron-right" class="w-5 h-5"></i> Downloaded & Opened WA. Click Next.`;
+                        btn.classList.remove('bg-green-600', 'hover:bg-green-700');
+                        btn.classList.add('bg-indigo-600', 'hover:bg-indigo-700'); 
+                        lucide.createIcons();
+                    }
+                } else {
+                     if(!isBatch) {
+                         btn.innerHTML = origHtml;
+                         btn.classList.remove('bg-green-600', 'hover:bg-green-700');
+                     }
+                }
+            }
+        }
+
+        function downloadQr() {
+            const link = document.createElement('a');
+            link.download = `Invoice_${currentQrFamily.parentName}.png`;
+            link.href = document.getElementById('invoiceCanvas').toDataURL();
+            link.click();
+        }
+
+        function generatePayNowQR(uen, amount, ref, merchantName) {
+            const cleanInput = uen.trim();
+            const mobileMatch = cleanInput.replace(/\D/g, '');
+            const isMobile = mobileMatch.length === 8 && /^[89]\d{7}$/.test(mobileMatch);
+            const proxyType = isMobile ? '0' : '2';
+            const proxyValue = isMobile ? '+65' + mobileMatch : cleanInput.replace(/[^a-zA-Z0-9]/g, '');
+            
+            const tag26Parts = [
+                { id: '00', value: 'SG.PAYNOW' },
+                { id: '01', value: proxyType },
+                { id: '02', value: proxyValue },
+                { id: '03', value: '0' }
+            ];
+            
+            const tag26Value = tag26Parts.map(t => t.id + String(t.value.length).padStart(2, '0') + t.value).join('');
+            
+            let tag62Value = '';
+            if (ref && ref.trim()) {
+                const cleanRef = ref.trim().substring(0, 25);
+                tag62Value = '01' + String(cleanRef.length).padStart(2, '0') + cleanRef;
+            }
+            
+            const payload = [
+                { id: '00', value: '01' },
+                { id: '01', value: '12' },
+                { id: '26', value: tag26Value },
+                { id: '52', value: '0000' },
+                { id: '53', value: '702' },
+                { id: '54', value: parseFloat(amount).toFixed(2) },
+                { id: '58', value: 'SG' },
+                { id: '59', value: (merchantName || 'NA').substring(0, 25) },
+                { id: '60', value: 'Singapore' }
+            ];
+            
+            if (tag62Value) payload.push({ id: '62', value: tag62Value });
+            
+            let str = payload.map(t => t.id + String(t.value.length).padStart(2, '0') + t.value).join('');
+            str += '6304';
+            
+            const crcTable = [0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x60c6, 0x70e7, 0x8108, 0x9129, 0xa14a, 0xb16b, 0xc18c, 0xd1ad, 0xe1ce, 0xf1ef, 0x1231, 0x0210, 0x3273, 0x2252, 0x52b5, 0x4294, 0x72f7, 0x62d6, 0x9339, 0x8318, 0xb37b, 0xa35a, 0xd3bd, 0xc39c, 0xf3ff, 0xe3de, 0x2462, 0x3443, 0x0420, 0x1401, 0x64e6, 0x74c7, 0x44a4, 0x5485, 0xa56a, 0xb54b, 0x8528, 0x9509, 0xe5ee, 0xf5cf, 0xc5ac, 0xd58d, 0x3653, 0x2672, 0x1611, 0x0630, 0x76d7, 0x66f6, 0x5695, 0x46b4, 0xb75b, 0xa77a, 0x9719, 0x8738, 0xf7df, 0xe7fe, 0xd79d, 0xc7bc, 0x48c4, 0x58e5, 0x6886, 0x78a7, 0x0840, 0x1861, 0x2802, 0x3823, 0xc9cc, 0xd9ed, 0xe98e, 0xf9af, 0x8948, 0x9969, 0xa90a, 0xb92b, 0x5af5, 0x4ad4, 0x7ab7, 0x6a96, 0x1a71, 0x0a50, 0x3a33, 0x2a12, 0xdbfd, 0xcbdc, 0xfbbf, 0xeb9e, 0x9b79, 0x8b58, 0xbb3b, 0xab1a, 0x6ca6, 0x7c87, 0x4ce4, 0x5cc5, 0x2c22, 0x3c03, 0x0c60, 0x1c41, 0xedae, 0xfd8f, 0xcdec, 0xddcd, 0xad2a, 0xbd0b, 0x8d68, 0x9d49, 0x7e97, 0x6eb6, 0x5ed5, 0x4ef4, 0x3e13, 0x2e32, 0x1e51, 0x0e70, 0xff9f, 0xefbe, 0xdfdd, 0xcffc, 0xbf1b, 0xaf3a, 0x9f59, 0x8f78, 0x6e17, 0x7e36, 0x4e55, 0x5e74, 0x2e93, 0x3eb2, 0x0ed1, 0x1ef0];
+            let crc = 0xFFFF;
+            for (let i = 0; i < str.length; i++) {
+                const c = str.charCodeAt(i);
+                if (c > 255) throw new RangeError('CRC16: Character out of range');
+                const j = (c ^ (crc >> 8)) & 0xFF;
+                crc = crcTable[j] ^ (crc << 8);
+            }
+            return str + ((crc ^ 0) & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
+        }
+    </script>
+</body>
+</html>
