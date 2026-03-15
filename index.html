@@ -11,6 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 
     <style>
         body { font-family: 'Inter', sans-serif; }
@@ -1043,30 +1044,7 @@ online,Lim Shi Qi,Ely Eng,93382733,shanicelim1134@gmail.com,P5,,Saturday,1633.92
             logoImage.src = LOGO_URL;
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            // 1. Load data and auto-update statuses FIRST
-            const saved = localStorage.getItem('tuition_families_v6'); 
-            if (saved && saved !== '[]') {
-                families = JSON.parse(saved);
-                // Ensure new fields exist for loaded data (backward compatibility)
-                families.forEach(f => {
-                    if (f.worksheetOrdered === undefined) f.worksheetOrdered = false;
-                    if (f.isPackage === undefined) f.isPackage = false;
-                    if (f.packageEndDate === undefined) f.packageEndDate = null;
-                    if (f.isTrial === undefined) f.isTrial = false; 
-                    if (f.bankAccountName === undefined) f.bankAccountName = ""; 
-                    // New settings defaults
-                    if (f.sec1OnlineRate === undefined) f.sec1OnlineRate = 140;
-                    if (f.sec1PhysicalRate === undefined) f.sec1PhysicalRate = 170;
-                });
-            } else {
-                parseAllCSVData();
-            }
-
-            // --- IMPORTANT: Run automated checks on load ---
-            checkAndAutoUpdateStatuses();
-            // ----------------------------------------------
-            
+        function initializeAppAfterData() {
             // Load the logo immediately
             loadLogo();
 
@@ -1075,16 +1053,29 @@ online,Lim Shi Qi,Ely Eng,93382733,shanicelim1134@gmail.com,P5,,Saturday,1633.92
             populateFilterOptions('subjectFilter', SUBJECTS);
             populateFilterOptions('dayFilter', DAYS); 
 
-            loadSettings();
-            
+            // Update settings inputs 
+            if (document.getElementById('settingsUen')) {
+                document.getElementById('settingsUen').value = appSettings.uen;
+                document.getElementById('settingsMerchant').value = appSettings.merchant;
+                document.getElementById('settingsBankName').value = appSettings.bankAccountName || ""; 
+                document.getElementById('settingsOnlineRate').value = appSettings.onlineRate || 128;
+                document.getElementById('settingsPhysicalRate').value = appSettings.physicalRate || 150;
+                document.getElementById('settingsSec1OnlineRate').value = appSettings.sec1OnlineRate || 140;
+                document.getElementById('settingsSec1PhysicalRate').value = appSettings.sec1PhysicalRate || 170;
+            }
+
+            // --- IMPORTANT: Run automated checks on load ---
+            checkAndAutoUpdateStatuses();
+
             // --- NEW: Run rate update on load after settings are loaded ---
             updateAllSubjectFees(families, appSettings);
-            // -------------------------------------------------------------
             
             setPage(currentPage); // Initialize the current page view
             lucide.createIcons();
-            
-            // Bindings for Account page are already in HTML for filters
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+             // Let auth handler drive UI setup. 
         });
         
         // --- PAGE CONTROL LOGIC (NEW) ---
@@ -1850,6 +1841,9 @@ online,Lim Shi Qi,Ely Eng,93382733,shanicelim1134@gmail.com,P5,,Saturday,1633.92
 
         function saveData() {
             localStorage.setItem('tuition_families_v6', JSON.stringify(families));
+            if (window.db) {
+                window.db.ref('tuition_families_v6').set(JSON.stringify(families)).catch(err => console.error(err));
+            }
             renderTable();
             // Ensure the schedule view is also updated if active
             if (currentPage === 'schedule') {
@@ -1859,20 +1853,7 @@ online,Lim Shi Qi,Ely Eng,93382733,shanicelim1134@gmail.com,P5,,Saturday,1633.92
         }
 
         function loadSettings() {
-            const saved = localStorage.getItem('appSettings');
-            if (saved) appSettings = JSON.parse(saved);
-
-            // Populate settings modal inputs
-            if (document.getElementById('settingsUen')) {
-                document.getElementById('settingsUen').value = appSettings.uen;
-                document.getElementById('settingsMerchant').value = appSettings.merchant;
-                document.getElementById('settingsBankName').value = appSettings.bankAccountName; 
-                document.getElementById('settingsOnlineRate').value = appSettings.onlineRate || 128;
-                document.getElementById('settingsPhysicalRate').value = appSettings.physicalRate || 150;
-                // NEW Sec 1 Rates
-                document.getElementById('settingsSec1OnlineRate').value = appSettings.sec1OnlineRate || 140;
-                document.getElementById('settingsSec1PhysicalRate').value = appSettings.sec1PhysicalRate || 170;
-            }
+            // Handled in initializeAppAfterData from Firebase payload
         }
 
         function saveSettings() {
@@ -1901,6 +1882,9 @@ online,Lim Shi Qi,Ely Eng,93382733,shanicelim1134@gmail.com,P5,,Saturday,1633.92
             };
             
             localStorage.setItem('appSettings', JSON.stringify(appSettings));
+            if (window.db) {
+                window.db.ref('appSettings').set(JSON.stringify(appSettings)).catch(err => console.error(err));
+            }
             
             // --- NEW: Re-run fee update if rates actually changed ---
             if (oldSettings.onlineRate !== appSettings.onlineRate ||
@@ -3191,6 +3175,9 @@ online,Lim Shi Qi,Ely Eng,93382733,shanicelim1134@gmail.com,P5,,Saturday,1633.92
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const ALLOWED_EMAIL = 'chungzhikai@gmail.com';
+        
+        window.db = firebase.database();
+        let appInitialized = false;
 
         const GOOGLE_ICON_HTML = `
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 flex-shrink-0" viewBox="0 0 48 48">
@@ -3227,7 +3214,71 @@ online,Lim Shi Qi,Ely Eng,93382733,shanicelim1134@gmail.com,P5,,Saturday,1633.92
             const btn = document.getElementById('google-sign-in-btn');
             if (user) {
                 if (user.email === ALLOWED_EMAIL) {
-                    loginScreen.classList.add('hidden');
+                    if (!appInitialized) {
+                        window.db.ref('/').once('value').then(snapshot => {
+                            const data = snapshot.val() || {};
+                            
+                            // 1. Families Data
+                            if (data.tuition_families_v6) {
+                                families = JSON.parse(data.tuition_families_v6);
+                                // Ensure backward compatibility
+                                families.forEach(f => {
+                                    if (f.worksheetOrdered === undefined) f.worksheetOrdered = false;
+                                    if (f.isPackage === undefined) f.isPackage = false;
+                                    if (f.packageEndDate === undefined) f.packageEndDate = null;
+                                    if (f.isTrial === undefined) f.isTrial = false; 
+                                    if (f.bankAccountName === undefined) f.bankAccountName = ""; 
+                                    if (f.sec1OnlineRate === undefined) f.sec1OnlineRate = 140;
+                                    if (f.sec1PhysicalRate === undefined) f.sec1PhysicalRate = 170;
+                                });
+                            } else {
+                                // Fallback to local
+                                const saved = localStorage.getItem('tuition_families_v6');
+                                if (saved && saved !== '[]') {
+                                    families = JSON.parse(saved);
+                                } else {
+                                    parseAllCSVData(); 
+                                }
+                                window.db.ref('tuition_families_v6').set(JSON.stringify(families)).catch(err => console.error(err));
+                            }
+                            
+                            // 2. Settings Data
+                            if (data.appSettings) {
+                                appSettings = JSON.parse(data.appSettings);
+                            } else {
+                                const savedSet = localStorage.getItem('appSettings');
+                                if (savedSet) {
+                                    appSettings = JSON.parse(savedSet);
+                                }
+                                window.db.ref('appSettings').set(JSON.stringify(appSettings)).catch(err => console.error(err));
+                            }
+                            
+                            initializeAppAfterData();
+                            loginScreen.classList.add('hidden');
+                            appInitialized = true;
+                        }).catch(err => {
+                            console.error("Firebase DB fetch error:", err);
+                            alert("Failed to sync with database. Using local data.");
+                            
+                            const saved = localStorage.getItem('tuition_families_v6');
+                            if (saved && saved !== '[]') {
+                                families = JSON.parse(saved);
+                            } else {
+                                parseAllCSVData();
+                            }
+                            
+                            const savedSet = localStorage.getItem('appSettings');
+                            if (savedSet) {
+                                appSettings = JSON.parse(savedSet);
+                            }
+                            
+                            initializeAppAfterData();
+                            loginScreen.classList.add('hidden');
+                            appInitialized = true;
+                        });
+                    } else {
+                        loginScreen.classList.add('hidden');
+                    }
                 } else {
                     // Wrong account — sign them out immediately
                     auth.signOut();
