@@ -105,230 +105,209 @@
 <body class="bg-gray-50 text-gray-800 h-screen flex flex-col">
 
     <!-- CSV DATA TEMPLATES -->
-    <script id="csv-master" type="text/template">Online/Physical,Student Name,Parent,Contact number,Email address,Level,Math (Day),Science (Day),Fee,Expiry/ Remark,Category
-Online,Eleanor Soh ,,82228070,annabellesg@gmail.com,P6,,Saturday,120.0,,Old Batch
-Online,Wendy Ng,Maven Ong,93800063,missngwen@gmail.com,P6,Monday,Tuesday,,2026-09-01,Old Batch
-Online,Adriel Kingsman,Marilyn Susanto,86682298,Merilyn.susanto@gmail.com,P6,Monday (Physical),Saturday,120.0,2026-09-01,Old Batch
-online,Du Wen Juan ,yuan jing tong,97913498,Yuanjingtong0826@gmail.com,P6,,Saturday,120.0,1/10/2025 (Feb need to renew),Old Batch
-online,Cui Jia (EBM),Qin zi xuan victor ,98625299,cuijiafirst@gmail.com,P6,Wednesday,,,Feb paid,Old Batch
-Online,Yi xuan,Lee Yee Cheng,97539101,yeecheng917@gmail.com,P5,Thursday,Saturday,,2026-12-01,Old Batch
-Online,Lim Shi Qi,Ely Eng,93382733,shanicelim1134@gmail.com,P5,,Saturday,,2027-03-01,Old Batch
-Physical,Velvet,Ooi Siau Fen,90257587,OOIFEN84@GMAIL.COM,P6,Wednesday,tUESDAY,,Feb paid,Old Batch
-online,oh thiam leng sean,chace oh,96219195,thiamleng@gmail.com,P5,,Saturday,,2026-02-01,Old Batch
-Online,Lynelle,Sophya lim lan Shii,80404810,imim25542@gmail.com,P6,,Saturday,,,Old Batch
-Online,Zion Lim,Lydia Lee,91999434,zionlimze@gmail.com,P6,,Saturday,,2026-05-01,Old Batch
-Physical,Haashini,Sundaramoorthy,90854668,anitha.smp@gmail.com,P5,Thursday,Tuesday,,Feb paid to elsie,Old Batch
-Online,Edrie xie (Xie Ying Wei),Doreen Tia,,frogrollercoaster@gmail.com,P6,,Tuesday,,Jan paid,Old Batch
-online,Cedric Ong Jun Siang,Tan Shy Woan,91252295,jouslyntsw@gmail.com,P6,Wednesday,Tuesday,,jan paid,Old Batch
-online,Diana Khoo,Dan Toh,98638255,iceteacubes@gmail.com,P5,,Saturday,,2027-01-01,Old Batch
-Physical,evey,sally,94234109,cuttlefish74@gmail.com,P6,,wEDNESDAY,,2026-12-01,Old Batch
-Physical,Kaius Lee,Adele Lim teng li,97992010,adele.ltl@gmail.com,P6,Monday,,,Jan paid,Old Batch
-Online,Candace,Eva siew,97341329,candacezhou@gmail.com,P6,,Saturday,,2026-09-01,Old Batch
-Online,Jayven Lin zhi qiang,Tingyi,81680162,lzqsv82@gmail.com / ytingyi@gmail.com,P5,,Saturday,,2026-12-01,Old Batch
-Online,Tan Yi xi,cASSIDY tAN,91911273,yixitan@gmail.com,P6,,Saturday,,Feb paid,Old Batch
-Physical,Tristan ,Ng Fang ping,96300158,ng.fangping@gmail.com,P5,,Tuesday,,Feb paid,Old Batch
-online,Kyra Goh,Joanne Lee,91289530,xdiamondthorpex@gmail.com,P5,Thursday,Saturday,,2026-12-01,Old Batch
-Physical,Soumiyan,Thendral Suganya,96677703,pntts1415@gmail.com,P6,Wednesday,Tuesday,,jan paid,Old Batch
-online,Frederick Seng (86860720),Hui Yan,98770720,huiyan.lhy@gmail.com,P4,,Friday,,Jan paid,Old Batch
-Online,Bryan Tan (Gwen),Berwyn Tan,96935880,btxh888@gmail.com,P6,,Saturday,120.0,,Old Batch
-Physical,Jude Tan,Jessy chua chen ling,81571107,"jessychua@gmail.com, tkaijun@gmail.com",P5,,Tuesday,,Jan paid,Old Batch
-Physical,esmeralda,Shan Shan,97271173,shanshanrivas@gmail.com,P6,Wednesday,Wednesday,,Feb paid,Old Batch
-online,Tan Lee Soh Sonia,Tan Su Ling Serene,94572064,serene.sl@gmail.com,P6,,Saturday,,paid for nov and dec too,Old Batch
-physical,Meng yING XI,Ji Ling,91877023,yoyomuyu2017@gmail.com,P6,xx,Tuesday,,nov and dec paid,Old Batch
-online,Faith Chandra,FENNY KUSUMA,91187821,Baby83doll@gmail.com,P4,Wednesday,Friday,,,Old Batch
-Online ,Qi Yi,Can wee ong ka kiat,85694358,qiyi0606@gmail.com,P4,,Friday,,,Old Batch
-online,Jace Cheng,Ng Li Hua Serene ,96827129,serenenlh25@gmail.com,P6,,Wednesday,,Feb paid,Old Batch
-Physical,Kelvin Koh hock siong,Jadon Koh,94313233,kelvinkohbh@gmail.com,P6,Wednesday,,,,Old Batch
-Physical,Kelvin Koh hock siong,Jadon Koh,94313233,kelvinkohbh@gmail.com,P6,,Saturday,,,Old Batch
-Physical,Kelvin Koh hock siong,Flavia Koh,94313233,kelvinkohbh@gmail.com,P6,,Tuesday,,,Old Batch
-Online,Peck Lin (Bilin),Lionel Kwok,92706464,stuffian@gmail.com,P6,Monday,,,2026-09-01,Old Batch
-Online,Zephyr keisho haraguchi,Yoshi,98754987,yoshihiro83@gmail.com,P6,,Saturday,,,Old Batch
-online,Mario Lucas Ranti,Timothy ranti,97563764, jtmario@gmail.com,P6,,Saturday,,Feb paid,Old Batch
-Online,Jayden Koh,Mavis Poon,96287397,mavispoon1987@gmail.com,P5,Thursday,Saturday,,nov and dec paid,Old Batch
-Physical,Keith,Cherrie Yee Choon Yuong ,81011165,yeecherrie2025@gmail.com,P6,Wednesday,Wednesday,,nov and dec paid,Old Batch
-Online,Subramanian Devi,Krishanth,81354675,neebee200@gmail.com,P5,Thursday,,,"Paid for jan , Nov and Dec pause",Old Batch
-Online,Michelle or Kelvin Teo Tsu We,Marc Teo,96251626,marcteojx@gmail.com,P6,,Tuesday,,Feb paid,Old Batch
-Online,Ong Shi Theng Stephy,Ting Min XUAN oLIVIA,92375358,forolivia2015@gmail.com,P5,,tUESDAY,,2026-12-01,Old Batch
-Online,Belinda Tan Poh Suan,Megan Yan,96963351,megan1234bel@gmail.com,P6,Wednesday,Saturday,,,Old Batch
-Online,Christina Lim Seow Yein,Charis,90602655,charislee165@gmail.com / Graced4life@gmail.com,P6,,Saturday,,,Old Batch
-Online,Tay Choon Him,Chua zhen yu,97200448,Choohim@gmail.com,P5,,Tuesday,,paid for nov and dec too,Old Batch
-online,lim chai ling,Lincoln Lem,82820191,lemszeleong@gmail.com,P6,,Wednesday,,Feb paid,Old Batch
-Physical,Jia yi,Jordan ,96906936,Dearjiayikuo@gmail.com,P6,,Tuesday,,nov and dec paid,Old Batch
-Online,Yvonne Yen Seetoh chin leong,Charlotte ,89041644,sunzhine3007@gmail.com; Seetohcharlotte@gmail.com,P5,,Tuesday,,,Old Batch
-physical,Ang Chian Hui Vanessa,Ethan leong,96446055,Chianhui12@gmail.com,P6,Wednesday,,,nov and dec paid,Old Batch
-Physical,Vicky zhang Xiao Jian,Lin jia An,90688819,vickyzhangxj8848@gmail.com,P6,xx,Tuesday,,paid for nov and dec too,Old Batch
-Online,Jayden Neo,Vivian Yap Hui Mei,97318231,Yhuimei@gmail.com,P6,Monday,Wednesday,,Feb paid,Old Batch
-online,Yap cHEIN ning,Wayne  Lee,98006652,leejianxiang@gmail.com,P5,Thursday,Tuesday,,,Old Batch
-Online,Sia Soo KIMG Sharon,Ruth Ong,90055538,Sharon.oylssk@gmail.com,P5,,Tuesday,,Feb paid,Old Batch
-Online,Francis Tan,Kaylin Tan,98428697,francisserene2421@gmail.com,P6,,Tuesday,,nov and dec paid,Old Batch
-Physical,Wu Qiong,Liu Wei xUAN,93657288,qiongw4@gmail.com,P6,Wednesday,,,Feb paid to elsie,Old Batch
-Physical,Wu Qiong,Liu Wei xUAN,93657288,qiongw4@gmail.com,P6,,Thursday,,Feb paid to elsie,Old Batch
-online,Kylynn Lim,Steaphy Yap Bee Min,91088637,steaphyyap86@gmail.com,P5,,Saturday,,Feb paid,Old Batch
-onLINE,Felicity Ngiam,Desiree Tan min En,84364986,felicityngiam@gmail.com,P6,,Wednesday,,jan paid,Old Batch
-onLINE,Eunice Chin Lee Tyan,Wong Sheng En,93214836,eunicechinlt@gmail.com,P5,,Saturday,,nov and dec paid,Old Batch
-Online,Tanean Ailei,Elly,90221876,mattyaitan@gmail.com,P6,,Tuesday,,Jan to March paid,Old Batch
-Physical,Chuan Ng,Adele Ng,91262728,mrngcc@gmail.com,P5,,Tuesday,,Jan paid,Old Batch
-Physical,Wendy ,Sheryse,94753577,ponyofoo2014@gmail.com,P6,,Tuesday,,Feb paid,Old Batch
-Physical,Alvin Chan,Vivian Chan,93887673,alvinchan1980@gmail.com,P6,,Tuesday,,Jan paid,Old Batch
-Physical,linan,Leyao,91018958,linan07501@gmail.com,P6,,Wednesday,,Feb paid,Old Batch
-Physical,linan,Leyi,91018958,linan07501@gmail.com,P4,,Friday,,"Feb paid, 1 trial unpaid",Old Batch
-online,Sean Foo,Zeth Foo,91550120,seanfzc@gmail.com,P5,,Saturday,,nov and dec paid,Old Batch
-Online,Grace Sim,alyssa tay,98899939,Gracesim512@gmail.com.sg,P4,,friday,,,Old Batch
-Physical,jasmine ong,george choo,94752875,septhlb@gmail.com,P4,,Friday,,nov and dec paid,Old Batch
-online,Kyler Tey,Anthea Chng,97479808,Chnganthea@gmail.com,P6,,Tuesday,,oct to dec paid,Old Batch
-Physical,Lam Shi Wen. Koh Hock Siong,Koh Kai Jun,90307343,kohkaijun9@gmail.com,P6,Wednesday,,,Dec paid.  jan to March 2026 paid,Old Batch
-online,Yu Tang,Nicole Xu Hao yan,80398967,nicolexiong2022@gmail.com,P6,,Saturday,,jan paid,Old Batch
-Online,Lee Yee Jen,Goh Yuh ping,97854092,yuhpinggoh@gmail.com,P6,xx,xx,,2026-09-01,Old Batch
-Physical,Ma Jia Ni,Sun Yan (MA SHAO YAN),92384096,accsunyan@gmail.com,P6,,Wednesday,,,Old Batch
-Online,Charis Ngu Jin Yan,Koh Shir Li,91683978,Shirlykoh@gmail.com,P3,,Thursday,,,2026 New Students
-Online,Nathaniel Leong Si Yuen,Fanny Khng,91197197,fkhng2010@gmail.com,P6,,Saturday,,Start jan. 1/9/2026,2026 New Students
-Online,Iva,Fanny Khng,91197197,fkhng2010@gmail.com,P4,,Saturday,,Start jan. 1/3/2026,2026 New Students
-Physical,Jayden Tay Ching Yu,Karen Chew Suat Ling ,96891391,kchew1016@gmail.com,P4,Wednesday,Friday,,2026-06-01,2026 New Students
-Physical,Jayen Tay Ching Xu ,Karen Chew Suat Ling,96891391,kchew1016@gmail.com,P4,Wednesday,Friday,,2026-06-01,2026 New Students
-Physical,Tan Han En Matilda,Esther Kua ,94579705,estherkuatan@gmail.com,P4,Wednesday,,,,2026 New Students
-Online,Anas Muhammad Bin Norhisham,Masliza Bte Asri,93637204,Anasmuhammadnorhisham@gmail.com,P6,,Thursday,,Feb paid,2026 New Students
-Physical,Anas Muhammad Bin Norhisham,Masliza Bte Asri,93637204,Anasmuhammadnorhisham@gmail.com,P6,Friday,,,Feb paid,2026 New Students
-Online,Aiken Chen Zhi Xiang,Tommy Budiharjo,93663683,tommybudiharjo@gmail.com,P4,,Friday,,,2026 New Students
-Physical,Karl Goh,Lim Pey Ting,90025091,gnityep@gmail.com,P6,Friday,,,FEB paid,2026 New Students
-Physical,Tan Kai Feng,Jen Wei Ting,96550988,jenweiting@gmail.com,P5,Thursday,Tuesday,,,2026 New Students
-Physical,Tan Zhi Rui,Jen Wei Ting,96550988,jenweiting@gmail.com,P5,Thursday,,,,2026 New Students
-Physical,Netra Murugesan ,Megala Govindharaju ,98571404,Megal.murugesan@gmail.com,P6,Wednesday,,,FEB paid,2026 New Students
-Online,Netra Murugesan ,Megala Govindharaju ,98571404,Megal.murugesan@gmail.com,P6,,Thursday,,FEB paid,2026 New Students
-Online,Chen Shangrui Darien,Chen Shuqiang (Lim Cai Jin Rita),94791985,shuqiang85@gmail.com,P6,Friday,Thursday,,,2026 New Students
-Online,Chen Yun Rui Kayla Rae,Chen Shuqiang (Lim Cai Jin Rita),94791985,shuqiang85@gmail.com,P5,Thursday,Saturday,,,2026 New Students
-Physical,Shriyans Das,Dr Anumita Chaudhury,83603406,anumita7@gmail.com,P5,,Monday,,,2026 New Students
-online,miranda,Toh Sui Ying (7 oct) Du Sui Ying,97543371,suiying.toh@gmail.com,Sec 1,,Tuesday,,Start jan. June 2026,2026 New Students
-online,Matthiaws,Toh Sui Ying (7 oct) Du Sui Ying,97543371,suiying.toh@gmail.com,P5,,xx,,Start jan. JUNE 2026,2026 New Students
-Online,Heidi Madeleine,Fong Ying Yi,97856876,Fong.ying.yi@gmail.com,P6,,Tuesday,,,2026 New Students
-Online,Tan Su Ling Serene ,Tan Lee Jin Shane ,94572064,serene.sl@gmail.com,P4,,Saturday,,,2026 New Students
-online,Evan,Evelyn,96152089,evancmw@gmail.com,P4,,Monday,,Paid for jan,2026 New Students
-Online,Faye,Liang May,91292551,prancingfaye@gmail.com,P6,,Wed,,,2026 New Students
-Physical,Ethan Wong,Aoffy Wong (David Wong sze kwan)/Atcharaporn Dechkerd,91592495,aoffywong@gmail.com,P6,Friday,Tuesday,,FEB paid,2026 New Students
-Physical,Hidya,Alfya binte Muhammad Imran,93690775,alfya.imran@gmail.com,P6,,Wednesday,,Feb paid,2026 New Students
-Online,Jeslyn Poh Lay Hong,Edria Lim,93355645,LGXEdria@gmail.com,P5,,Saturday,,2025-12-06,2026 New Students
-Online,Nikki Ip,Nolan Tan,98349692,wmnk12@gmail.com,P6,,Tuesday,,Jan and feb paid too,2026 New Students
-Physical ,Ong Xi Yan Ashley,Koo Bang Qi,98253322,xiyannnn@gmail.com,P4,,Friday,,2026-01-23,2026 New Students
-Online,Nicholas Chong Weng Mun,Riley Chong Pei Le,91003184,Technoxavage@gmail.com,P5,Monday,,,Jan paid,2026 New Students
-Online,Sia Siee Chuan,Darren Sia Kai Ann,85118768,sieechuansia@gmail.com,P5,,Monday,,Jan and feb paid,2026 New Students
-Physical,Ridwan ,Yusuf bin ridwan,81027636,Wantanjung123@gmail.com,P6,,Tuesday,,2026-01-06,2026 New Students
-Physical,Ridwan,Sophia Rose binte ridwan ,81027637,Wantanjung123@gmail.com,P4,Wednesday,Friday,,2026-01-07,2026 New Students
-Physical,Ken Fong W T,Fong Jing Kai,90067531,fongsbills@gmail.com,P4,Wednesday,,,2026-01-07,2026 New Students
-Physical,Foong lin,Megan tan kai lyn,83235832,Calflin1001@gmail.com,P4,,Friday,,2026-01-09,2026 New Students
-online,Wong yen yen,Ong Boon Pin,96639276,yyenwong@gmail.com,P6,Monday,,,Jan and feb paid,2026 New Students
-Physical,Yip Kai Li Kylie,Wong Fei Yoke,96209119,feywong9119@gmail.com,P6,,Tuesday,,Feb paid,2026 New Students
-online,Tasha,Chua Wee Wee,97776506,chua.weewee@gmail.com,Sec1,,Tuesday,,,2026 New Students
-Online,Sherlyn Lim En Qi,Arissa Tham,97465285,,P5,,Saturday,,2026-01-10,2026 New Students
-Physical,Damien Po,Elizabeth,90998608,elizaongxb@gmail.com,P4 ,Wednesday,xx,,,2026 New Students
-physical,Elizabeth Ong,"Po Yi Tong, Ashley",90998608,elizaongxb@gmail.com,P5,Math,,,,2026 New Students
-Online,Seline Chiew chi hwei,Shannon Kuek,83888658,seline26@gmail.com,P6,xx,Wednesday,,Jan and feb paid too,2026 New Students
-Online,Daphne Wong,Clara Tan,96827731,wongdaphne@gmail.com,P4,xx,Wednesday,,,2026 New Students
-Physical,Jerine Yue shu jun,Kayla Yow ,96822723,Enirej@gmail.com,P6,Friday,,,,2026 New Students
-Physical,Teo Yin Nah / Lewis,Evan Hong Zhiren,96915766,yinnah@gmail.com,P6,,Tuesday,,Feb paid,2026 New Students
-Physical,Anees Fathima,Mohamed Inamul Haq S/O Niyasudeen,81777559,aneesniyas@gmail.com,P5,,Monday,,,2026 New Students
-Physical,Elsa Chew ,Katherine Chew,83388648,sdscherry@gmail.com,P5,,Monday,,,2026 New Students
-Online,Rajeev,Lekha ,91146315,cvlm2009@gmail.com,P4,,Friday,Clementi Primary School,,2026 New Students
-Online,Karen Lin,Rie-Anne Sim ,93899622,KAREN.SHUMEI.LIN@GMAIL.COM,P4,Wednesday,,Ngee Ann Primary School ,,2026 New Students
-Online,Lim En Qi Sherlyn,Tham Jing Xuan Arissa,97465285,sherlyn.tham@gmail.com,P5,,Saturday,Qifa Primary School,,2026 New Students
-Online,Zuliha Ahmad,Matin Mirza,91458415,ummy.mahirah@gmail.com,P5,Monday,,Yuhua Primary School ,,2026 New Students
-Online,Jason Ong kian tiong,Aiden Ong Wei Zheng,90185800,doomringer79@gmail.com,P6,,Wednesday,Pei Tong Primary School ,,2026 New Students
-Online,Roopali kadam,Swara pradeep kadam,97720444,pariniikad@gmail.com,P6,,Wednesday,Angasana primary school,,2026 New Students
-Physical at Clementi,PEH PING YAW,PEH PING YAW,97774316,peh751028@gmail.com,P6,,Wednesday,NanHua,,2026 New Students
-Online,Damaria Tumbuck,Mohamad Mikael,93695294,Damaideetumbuck@gmail.com,P5,,Monday,HPPS,,2026 New Students
-Online,Damaria tumbuck,Mohamad jibrael,93695294,Damaideetumbuck@gmail.com,P4,,Saturday,Henry Park,,2026 New Students
-Online,lim kok chin / Belinda Wen PEI fANG,Lim yuxin,96375752,ahchin10@gmail.com,P6,,Thursday,Bukit Panjang primary sch.,,2026 New Students
-Physical at Clementi,Tan siew choo,Mok Chung San kaleb,96331782,siewchoo.tan82@gmail.com,Sec 1,,Tuesday,Assumption English school,Jan and Feb paid,2026 New Students
-Online,Qin Lingjun,Umeweni Stephanie Qin Tianlang ,97556172,lingjunqin@gmail.com,P5,,Monday,Endeavour Primary School ,,2026 New Students
-Online,Stephanie Yeo,Leryn Peh Yu Tong,81000880,yeoaibing@gmail.com,Sec 1,,Tuesday,CHIJ Katong Convent,,2026 New Students
-Physical,Tan Si Ying,Liang Chengmei,98378306,Tansiyingbcm@gmail.com,P5,,Tuesday,,Jan paid,2026 New Students
-Physical,Elodie,Renee,85225183,,P6,Friday,,,,2026 New Students
-Online,Kylet Chia,Sherry Chia Huang Hui Hui,89300323,,p6,Friday,,,,2026 New Students
-Online,Caelyn Wong,Gillian How,91994226,,P4,Friday,,,paid trial,2026 New Students
-Physical,Alison Lee Si,Fujita Yuriko,92263031,fujitalee77@gmail.com,P6,Friday,,,,2026 New Students
-Online,How Gillian,Caelyn Wong Yi Xuan,91994226,gillian.how@gmail.com,P4,,Friday,CHIJ Katong Primary,2026-02-06,2026 New Students
-Online,Ginn Chua,Gernice Ng Jing Xuan,97694553,gernice929@gmail.com,P6,,Thursday,Rulang ,2026-02-19,2026 New Students
-Physical at Clementi,Woon foong lin,Tan kai lyn megan,83235832,Calflin1001@gmail.com,P4,,Friday,Henry park ,2026-01-09,2026 New Students
-Online,Wong kuang yu,Wong juan di,98539521,Kuangyu@gmail.com,P5,,Saturday,Nanyang,2026-02-28,2026 New Students
-Online,Samantha Lim  Bee Nah,Natalia Parinova,97601020,Samanthabnl01@gmail.com,P6,,Saturday,Hpps,2026-03-07,2026 New Students
-Online,Eunice Boo Cai Ling,Darryl Kong,97992931,Cailingsgenie@gmail.com,P4,,Saturday,KCPPS,2026-03-07,2026 New Students
-Online,Teh Hui Pheng/ Koah Kim LEONG,Koay Sin Ruey,81667257,tehhp323@gmail.com,P6,,Saturday,West View Primary School ,2026-03-07,2026 New Students
-Physical at Clementi,FERRA SEE,Chen rouxin christy,91907974,FERRASEE@GMAIL.COM,P5,Thursday,,Nanhua ,2026-03-12,2026 New Students
-Online,Chaewon Kwak,Alessandro Bernacchia ,90698075,chaewon.kk@gmail.com,P6,Friday,,,trial only 2025-12-05,Trial No Continue
-Online,Lynette Soh Ling Hui,Emily Wee,96870410,Emilywee42@gmail.com,P6,,Saturday,,trial only 2025-12-02,Trial No Continue
-Online,Janelle,Stephanie Tan Soew Ling,90666260,Xiaolyn@hotmail.com,P6,,Tuesday,,trial only 2025-12-13,Trial No Continue
-Physical,Charmine,Vera,83399911,,,,,, one trial ,Trial No Continue
-Online,Liew Shu Yun,Loy Yong De,96567626,Ysloyysloy@gmail.com,P5,Thursday,,, havent pay anything,Trial No Continue
-Online,Ryan Natt,Catherine Natt,90071209,catherinenatt@gmail.com,P4,,Saturday,128.0,package 2026-01-01,Withdrawal
-Online,Beh Qiao En,Jessie Tai,83987308,michaelbeh81@gmail.com,P5,Wednesday,Wedmnesday,,Package 2025-10-01,Withdrawal
-online,Tristan Tan,Serena kong,97680501,snowy_dew@hotmail.com,P5,Monday,,, Oct paid,Withdrawal
-Physical,Poe Wah Li,Zulat Nadi Lin,98396704,poewahlin@gmail.com,P5,,Wednesday,, Oct paid,Withdrawal
-Physical,Venetia tAN,Kegan,97604764,tangcv30@gmail.com,P6,Wednesday,,,wont continue  nov and dec paid,Withdrawal
-online,Akins Teo,Kath Lye Huay Yee (6 Oct),97482171,kathlyehy@gmail.com,P6,,Tuesday,, nov only. Dec not paid,Withdrawal
-online,Ghing Ghing,Zhen Yao,90231806,ghingghing.ling@gmail.com,P5,,Tuesday,,package jan - Oct 2025,Withdrawal
-Online,Rachel Ong,Sharon Lee,96586070,rachelongcy@gmail.com,P6,Wednesday,Saturday,60.0,package 2025-10-01,Withdrawal
-Physical at Balmoral Plaza,Leila Liena Ijuin ,Mitsuna Ijuin,96580183,Mitsunaijuin@gmail.com,P6,Monday,,,2025-11-11 trial only,Withdrawal
-Physical,Nicole Lee,Vivian Lim,98461505,lim.vivian1212@gmail.com,P6,Wednesday,,,trial 2025-10-22,Withdrawal
-Online,Shirley Ngao Wee Ling,Triston Ng,92218510,shirleyngao@gmail.com,P6,,Saturday,27.0,will not continue after dec 2025-12-01,Withdrawal
-Physical,Angelia Goh Pei Fang,Dylan Chen,97626999,chenw1155h@gmail.com,P6,,Tuesday,,will not continue after dec dec last month,Withdrawal
-Online,Ng Xin Hui,Choi Yoke Kiew,96348705,kiewkiew81@gmail.com,P6,,Saturday,,will not continue after dec dec last month,Withdrawal
-online,Olivia ooi,lim miow wah,96249756,Janmiowwah@gmail.com,P6,,Tuesday,,will not continue after dec nov and dec paid,Withdrawal
-Physical,Kaius Lee,Adele Lim,97992010,adele.ltl@gmail.com,P6,,Tuesday,,package 2025-12-01,Withdrawal
-Online,Darius kong,Eunice Boo,97992931,cailingsgenie@gmail.com,P5,,Saturday,,yes nov and dec paid. Jan onwards withdraw,Withdrawal
-Online,Candace,Eva siew,97341329,candacezhou@gmail.com/ evasiewyx@gmail.com,P6,monday,,,yes Nov and Dec paid,Withdrawal
-online,WenQi (Lee Chi yong),Louis,96568693,wenqi1101@gmail.com,P5,,Tuesday,,nov and dec havent pay but will cont removed from google classroom,Withdrawal
-Physical,Sebastian Lin,Jasmine Tan,98362311,chiulee.tan@gmail.com,Sec 1,,Tuesday,,jan start Jan start ,Withdrawal
-Physical,Jessica Chiu,Emily Ho JIA MIN,93686332,emily.jiamin@gmail.com,P5,Wednesday,Tuesday,,Jan paid ,Withdrawal
-Physical,Yvonne Yen Seetoh chin leong,Charlotte ,89041644,sunzhine3007@gmail.com; Seetohcharlotte@gmail.com,P5,Thursday,,,jan paid ,Withdrawal
-,Sharon Lee (2 children),,,,P5 Sci and math,,,,Nov 2024 to Oct 2025 ,Package
-,Elaine Khoo,,,,P6 ,,,1536.0,Jan 2025 to Sept 2025 + 3 workshop credits old price plus a few 10 years series,Package
-,Dylan sis Mavis,,,,P6 math and science,,,3328.0,Nov 2024 to Sept 2025 + 6 holiday credits ,Package
-,Marilyn (Adriel),,,,P5 Math and Science(Math physical),,,3443.0,Nov 2024 to Oct 2025 ,Package
-,Yi En,,,,P6 Math and Science,,,,Nov 2024 to Sept 2025 ,Package
-,Yi Xuan,,,,P4 math and science,,,5312.0,Nov 2024 to Oct 2025 P4 sci ,Package
-,Luke (Anne Ng),,,,P6 Sci,,,1850.0,Nov 2024 to Sept 2025 ,Package
-,Maven Ong (Wendy),,,,P5  p6 math and sci ,,,5376.0,Nov 2024 to Sept 2026 online,Package
-,Ryan Natt (Catherine),,,,P4 sCIENCE ,,,1536.0,Jan 2025 to Jan 2026 + $80 material fee ,Package
-,Hui Kin Wai,,,,P6 math and science,,,3117.0,Nov 2024 to Sept 2025 ,Package
-,(Ely Eng) Lim Shi Qi ,,,,P4 sCIENCE ,,,1536.0,Feb 2025 to Feb 2026 ,Package
-,Beh Qiao En,,,,P5 Math and Science online,,,3072.0,Oct 2024 to Oct 2025 ,Package
-,Sean Oh Thiam Leng,,,,P4 sCIENCE ,,,1536.0,Feb 2025 to Feb 2026 ,Package
-,Jamie (Cayden),,,,P6 math and science,,,4070.0,Oct 2024 to Sept 2025 ,Package
-,Choi Yoke Kiew (Ng Xin Hui),,,,p5 Sci,,,1536.0,Nov 2024 to Dec 2025 ,Package
-,Adele Lim (Kaius Lee),,,,P5 Sci physical,,,2220.0,Nov 2024 to Dec 2025 ,Package
-,Foo Wei Ling (Zoanne),,,,P6 Math and Science online (may need to top up for physical),,,1536.0,Jan 2025 to June 2025 ,Package
-,Jayven Lin zhi qiang (Tingyi),,,,P4 sCIENCE ,,,1504.0,Dec 2024 to Dec 2025 ,Package
-,Angelia (Dylan),,,,P5 Science,,,2220.0,Nov 2024 to Dec 2025 ,Package
-,Joanne lee (Kyra Goh),,,,P4 math and science,,,3008.0,Dec 2024 to Dec 2025 ,Package
-,Diana Khoo,,,,P4 sCIENCE ,,,1536.0,Nov 2024 to Dec 2025 ,Package
-,Ang Kai Zhe (Hui Lai),,,,P6 science,,,1536.0,Jan 2025 to Jan 2026 ,Package
-,Tan Evon (Jed),,,,P6 science,,,1804.0,Dec 2024 to Sept 2025 ,Package
-,Alice Qian,,,,P6 math and science,,,2560.0,Nov 2024 to Sept 2025 - 2 subjects ,Package
-,Kai Ni,,,,p6 science only,,,896.0,Feb 2025 to Sept 2025 ,Package
-,sally (Evey),,,,P5 math and science,,,2156.0,Jan 2025 to May 2025 ,Package
-,Ghing Ghing (Zhen Yao),,,,P4 sCIENCE ,,,1280.0,Jan 2025 to Oct 2025 ,Package
-,Bryan Tan (Gwen),,,,P5 SCIENCE,,,1408.0,Jan 2025 to Dec 2025 ,Package
-,Rayhan Ariz (SUE),,,,P6 Science,,,1152.0,Dec 2024 to Sept 2025 (Dec not paid yet) ,Package
-,Nguyen thi Loc,,,,P6 math and sci,,,2304.0,Jan 2025 to Sept 2025(2 subjects) ,Package
-,Mardiana,,,,P6 math and Sci,,,2689.0,Jan 2025 to September 2025 ,Package
-,Shirley Ngao Wee Ling (TRISTON MUM),,,,p5 sCI,,,1536.0,Nov 2024 - Dec 2025 ,Package
-,Li xue Qing (Li xiaoyu),,,,P6 sci,,,1280.0,Nov 2024 - Sept 2025 ,Package
-,Ng Fang Ping,,,,P6 sci,,,1796.0,Jan 2025 to sept 2025 ,Package
-,Du wen Juan,,,,P5 and sec 1 sci,,,2369.92,April 2025 to Oct 2025 (2 kids) ,Package
-,Lydia Lee Pheck Lu,,,,P5 sci,,,1633.92,May 2025 to May 2026 ,Package
-,sally (Evey),,,,P5 math and science,,,2263.2,June 2025 to Nov 2025 2 subjects ,Package
-,Fanny Kng,,,,P4 sci and P6 sci,,,1770.08,"Nat Jan to Sept, Iva jan to March (one subject) ",Package
-,Yee Jen (Goh Yuh Ping),,,,P6 math and p6 sci,,,2723.2,"Nov and Dec 2025, Jan to Sept 2026 (2 subjects) ",Package
-,Kyra Goh (Joanne Lee),,,,P5 math and P5 sCI,,,2995.52,Jan to Dec 2026 (2 subjects) ,Package
-,Diana khoo ,,,,P5 sci and P6 sci 2 months,,,1633.92,Jan 2026 to Jan 2027 ,Package
-,Lee Yee Cheng (yi xuan),,,,P5 math and P5 sCI,,,3267.84,Nov 2025 to Dec 2026 ,Package
-,Candace,,,,P6 Science + P6 Math 1 credit + 1 workshop credit,,,1776.0,Nov 2025 to Oct 2026 ,Package
-,Javen (Vivian Ting yi),,,,P5 Science ,,,1497.0,Jan 2026 to Dec 2026 (11 months) UEN,Package
-,Marilyn (Adriel),,,,P6 math and p6 sci,,,3247.0,Nov 2025 to Sept 2026 ,Package
-,Stepy (Olivia),,,,P4 sci,,,,Nov 2025 to Dec 2026 ,Package
-,Bilin,,,,P6 Sci,,,1633.92,Jan to sept 2026 + 3 workshop credit ,Package
-,Toh Sui Ying,,,,Sec 1 and P5 sci,,,2031.0,Jan to June 2026 ,Package
-,Jayden and Jayen (Karen),,,,2 kids  2 subjects for 6 months,,,4526.4,Jan to June 2026 ,Package
-,Sally Even,,,,sci till psle,,,1791.7,Jan to Sept 2026 ,Package
-,(Ely Eng) Lim Shi Qi ,,,,P5 sci and P6 sci,,,1633.92,March 2026 - March 2027 ,Package
+    <script id="csv-master" type="text/template">Online/Physical,Student Name,Parent,Contact number,Email address,Level,Subject,Day,Fee,Expiry/ Remark,Category
+Online,Aiken Chen Zhi Xiang,Tommy Budiharjo,93663683,tommybudiharjo@gmail.com,P4,Science,Friday,,,2026 New Students
+Physical,Alison Lee Si,Fujita Yuriko,92263031,fujitalee77@gmail.com,P6,Math,Friday,,,2026 New Students
+Physical,Anas Muhammad Bin Norhisham,Masliza Bte Asri,93637204,Anasmuhammadnorhisham@gmail.com,P6,Math,Friday,,Feb paid,2026 New Students
+Online,Anas Muhammad Bin Norhisham,Masliza Bte Asri,93637204,Anasmuhammadnorhisham@gmail.com,P6,Science,Thursday,,Feb paid,2026 New Students
+Physical,Anees Fathima,Mohamed Inamul Haq S/O Niyasudeen,81777559,aneesniyas@gmail.com,P5,Science,Monday,,,2026 New Students
+Online,Caelyn Wong,Gillian How,91994226,,P4,Math,Friday,,paid trial,2026 New Students
+Online,Charis Ngu Jin Yan,Koh Shir Li,91683978,Shirlykoh@gmail.com,P3,Science,Thursday,,,2026 New Students
+Online,Chen Shangrui Darien,"Chen Shuqiang (Lim Cai Jin Rita)",94791985,shuqiang85@gmail.com,P6,Math,Friday,,,2026 New Students
+Online,Chen Shangrui Darien,"Chen Shuqiang (Lim Cai Jin Rita)",94791985,shuqiang85@gmail.com,P6,Science,Thursday,,,2026 New Students
+Online,Chen Yun Rui Kayla Rae,"Chen Shuqiang (Lim Cai Jin Rita)",94791985,shuqiang85@gmail.com,P5,Math,Thursday,,,2026 New Students
+Online,Chen Yun Rui Kayla Rae,"Chen Shuqiang (Lim Cai Jin Rita)",94791985,shuqiang85@gmail.com,P5,Science,Saturday,,,2026 New Students
+Online,Damaria Tumbuck,Mohamad Mikael,93695294,Damaideetumbuck@gmail.com,P5,Science,Monday,,HPPS,2026 New Students
+Online,Damaria tumbuck,Mohamad jibrael,93695294,Damaideetumbuck@gmail.com,P4,Science,Saturday,,Henry Park,2026 New Students
+Physical,Damien Po,Elizabeth,90998608,elizaongxb@gmail.com,P4,Math,Wednesday,,,2026 New Students
+Physical,Damien Po,Elizabeth,90998608,elizaongxb@gmail.com,P4,Science,,,2026 New Students
+Online,Daphne Wong,Clara Tan,96827731,wongdaphne@gmail.com,P4,Math,,,2026 New Students
+Online,Daphne Wong,Clara Tan,96827731,wongdaphne@gmail.com,P4,Science,Wednesday,,,2026 New Students
+physical,Elizabeth Ong,"Po Yi Tong, Ashley",90998608,elizaongxb@gmail.com,P5,Math,,,2026 New Students
+Physical,Elodie,Renee,85225183,,P6,Math,Friday,,,2026 New Students
+Physical,Elsa Chew,Katherine Chew,83388648,sdscherry@gmail.com,P5,Science,Monday,,,2026 New Students
+Physical,Ethan Wong,"Aoffy Wong (David Wong sze kwan)/Atcharaporn Dechkerd",91592495,aoffywong@gmail.com,P6,Math,Friday,,FEB paid,2026 New Students
+Physical,Ethan Wong,"Aoffy Wong (David Wong sze kwan)/Atcharaporn Dechkerd",91592495,aoffywong@gmail.com,P6,Science,Tuesday,,FEB paid,2026 New Students
+Online,Eunice Boo Cai Ling,Darryl Kong,97992931,Cailingsgenie@gmail.com,P4,Science,Saturday,KCPPS,2026-03-07,2026 New Students
+online,Evan,Evelyn,96152089,evancmw@gmail.com,P4,Science,Monday,,Paid for jan,2026 New Students
+Physical at Clementi,FERRA SEE,Chen rouxin christy,91907974,FERRASEE@GMAIL.COM,P5,Math,Thursday,Nanhua,2026-03-12,2026 New Students
+Online,Faye,Liang May,91292551,prancingfaye@gmail.com,P6,Science,Wednesday,,,2026 New Students
+Physical,Foong lin,Megan tan kai lyn,83235832,Calflin1001@gmail.com,P4,Science,Friday,,2026-01-09,2026 New Students
+Online,Ginn Chua,Gernice Ng Jing Xuan,97694553,gernice929@gmail.com,P6,Science,Thursday,Rulang,2026-02-19,2026 New Students
+Online,Heidi Madeleine,Fong Ying Yi,97856876,Fong.ying.yi@gmail.com,P6,Science,Tuesday,,,2026 New Students
+Physical,Hidya,Alfya binte Muhammad Imran,93690775,alfya.imran@gmail.com,P6,Science,Wednesday,,Feb paid,2026 New Students
+Online,How Gillian,Caelyn Wong Yi Xuan,91994226,gillian.how@gmail.com,P4,Science,Friday,CHIJ Katong Primary,2026-02-06,2026 New Students
+Online,Iva,Fanny Khng,91197197,fkhng2010@gmail.com,P4,Science,Saturday,,Start jan. 1/3/2026,2026 New Students
+Online,Jason Ong kian tiong,Aiden Ong Wei Zheng,90185800,doomringer79@gmail.com,P6,Science,Wednesday,Pei Tong Primary School,,2026 New Students
+Physical,Jayden Tay Ching Yu,Karen Chew Suat Ling,96891391,kchew1016@gmail.com,P4,Math,Wednesday,,2026-06-01,2026 New Students
+Physical,Jayden Tay Ching Yu,Karen Chew Suat Ling,96891391,kchew1016@gmail.com,P4,Science,Friday,,2026-06-01,2026 New Students
+Physical,Jayen Tay Ching Xu,Karen Chew Suat Ling,96891391,kchew1016@gmail.com,P4,Math,Wednesday,,2026-06-01,2026 New Students
+Physical,Jayen Tay Ching Xu,Karen Chew Suat Ling,96891391,kchew1016@gmail.com,P4,Science,Friday,,2026-06-01,2026 New Students
+Physical,Jerine Yue shu jun,Kayla Yow,96822723,Enirej@gmail.com,P6,Math,Friday,,,2026 New Students
+Online,Jeslyn Poh Lay Hong,Edria Lim,93355645,LGXEdria@gmail.com,P5,Science,Saturday,,2025-12-06,2026 New Students
+Online,Karen Lin,Rie-Anne Sim,93899622,KAREN.SHUMEI.LIN@GMAIL.COM,P4,Math,Wednesday,Ngee Ann Primary School,,2026 New Students
+Physical,Karl Goh,Lim Pey Ting,90025091,gnityep@gmail.com,P6,Math,Friday,,FEB paid,2026 New Students
+Physical,Ken Fong W T,Fong Jing Kai,90067531,fongsbills@gmail.com,P4,Math,Wednesday,,2026-01-07,2026 New Students
+Online,Kylet Chia,Sherry Chia Huang Hui Hui,89300323,,P6,Math,Friday,,,2026 New Students
+Online,Lim En Qi Sherlyn,Tham Jing Xuan Arissa,97465285,sherlyn.tham@gmail.com,P5,Science,Saturday,Qifa Primary School,,2026 New Students
+online,Matthiaws,Toh Sui Ying,97543371,suiying.toh@gmail.com,P5,Science,,,Start jan. JUNE 2026,2026 New Students
+Online,Nathaniel Leong Si Yuen,Fanny Khng,91197197,fkhng2010@gmail.com,P6,Science,Saturday,,Start jan. 1/9/2026,2026 New Students
+Physical,Netra Murugesan,Megala Govindharaju,98571404,Megal.murugesan@gmail.com,P6,Math,Wednesday,,FEB paid,2026 New Students
+Online,Netra Murugesan,Megala Govindharaju,98571404,Megal.murugesan@gmail.com,P6,Science,Thursday,,FEB paid,2026 New Students
+Online,Nicholas Chong Weng Mun,Riley Chong Pei Le,91003184,Technoxavage@gmail.com,P5,Math,Monday,,Jan paid,2026 New Students
+Online,Nikki Ip,Nolan Tan,98349692,wmnk12@gmail.com,P6,Science,Tuesday,,Jan and feb paid too,2026 New Students
+Physical,Ong Xi Yan Ashley,Koo Bang Qi,98253322,xiyannnn@gmail.com,P4,Science,Friday,,2026-01-23,2026 New Students
+Physical at Clementi,PEH PING YAW,PEH PING YAW,97774316,peh751028@gmail.com,P6,Science,Wednesday,NanHua,,2026 New Students
+Online,Qin Lingjun,Umeweni Stephanie Qin Tianlang,97556172,lingjunqin@gmail.com,P5,Science,Monday,Endeavour Primary School,,2026 New Students
+Online,Rajeev,Lekha,91146315,cvlm2009@gmail.com,P4,Science,Friday,Clementi Primary School,,2026 New Students
+Physical,Ridwan,Sophia Rose binte ridwan,81027637,Wantanjung123@gmail.com,P4,Math,Wednesday,,2026-01-07,2026 New Students
+Physical,Ridwan,Sophia Rose binte ridwan,81027637,Wantanjung123@gmail.com,P4,Science,Friday,,2026-01-07,2026 New Students
+Physical,Ridwan,Yusuf bin ridwan,81027636,Wantanjung123@gmail.com,P6,Science,Tuesday,,2026-01-06,2026 New Students
+Online,Roopali kadam,Swara pradeep kadam,97720444,pariniikad@gmail.com,P6,Science,Wednesday,Angasana primary school,,2026 New Students
+Online,Samantha Lim Bee Nah,Natalia Parinova,97601020,Samanthabnl01@gmail.com,P6,Science,Saturday,Hpps,2026-03-07,2026 New Students
+Online,Seline Chiew chi hwei,Shannon Kuek,83888658,seline26@gmail.com,P6,Math,,,Jan and feb paid too,2026 New Students
+Online,Seline Chiew chi hwei,Shannon Kuek,83888658,seline26@gmail.com,P6,Science,Wednesday,,Jan and feb paid too,2026 New Students
+Online,Sherlyn Lim En Qi,Arissa Tham,97465285,,P5,Science,Saturday,,2026-01-10,2026 New Students
+Physical,Shriyans Das,Dr Anumita Chaudhury,83603406,anumita7@gmail.com,P5,Science,Monday,,,2026 New Students
+Online,Sia Siee Chuan,Darren Sia Kai Ann,85118768,sieechuansia@gmail.com,P5,Science,Monday,,Jan and feb paid,2026 New Students
+Online,Stephanie Yeo,Leryn Peh Yu Tong,81000880,yeoaibing@gmail.com,Sec 1,Science,Tuesday,CHIJ Katong Convent,,2026 New Students
+Physical,Tan Han En Matilda,Esther Kua,94579705,estherkuatan@gmail.com,P4,Math,Wednesday,,,2026 New Students
+Physical,Tan Kai Feng,Jen Wei Ting,96550988,jenweiting@gmail.com,P5,Math,Thursday,,,2026 New Students
+Physical,Tan Kai Feng,Jen Wei Ting,96550988,jenweiting@gmail.com,P5,Science,Tuesday,,,2026 New Students
+Physical,Tan Si Ying,Liang Chengmei,98378306,Tansiyingbcm@gmail.com,P5,Science,Tuesday,,Jan paid,2026 New Students
+Online,Tan Su Ling Serene,Tan Lee Jin Shane,94572064,serene.sl@gmail.com,P4,Science,Saturday,,,2026 New Students
+Physical,Tan Zhi Rui,Jen Wei Ting,96550988,jenweiting@gmail.com,P5,Math,Thursday,,,2026 New Students
+Physical at Clementi,Tan siew choo,Mok Chung San kaleb,96331782,siewchoo.tan82@gmail.com,Sec 1,Science,Tuesday,Assumption English school,Jan and Feb paid,2026 New Students
+online,Tasha,Chua Wee Wee,97776506,chua.weewee@gmail.com,Sec 1,Science,Tuesday,,,2026 New Students
+Online,Teh Hui Pheng/ Koah Kim LEONG,Koay Sin Ruey,81667257,tehhp323@gmail.com,P6,Science,Saturday,West View Primary School,2026-03-07,2026 New Students
+Physical,Teo Yin Nah / Lewis,Evan Hong Zhiren,96915766,yinnah@gmail.com,P6,Science,Tuesday,,Feb paid,2026 New Students
+Online,Wong kuang yu,Wong juan di,98539521,Kuangyu@gmail.com,P5,Science,Saturday,Nanyang,2026-02-28,2026 New Students
+online,Wong yen yen,Ong Boon Pin,96639276,yyenwong@gmail.com,P6,Math,Monday,,Jan and feb paid,2026 New Students
+Physical at Clementi,Woon foong lin,Tan kai lyn megan,83235832,Calflin1001@gmail.com,P4,Science,Friday,Henry park,2026-01-09,2026 New Students
+Physical,Yip Kai Li Kylie,Wong Fei Yoke,96209119,feywong9119@gmail.com,P6,Science,Tuesday,,Feb paid,2026 New Students
+Online,Zuliha Ahmad,Matin Mirza,91458415,ummy.mahirah@gmail.com,P5,Math,Monday,Yuhua Primary School,,2026 New Students
+online,lim kok chin / Belinda Wen PEI fANG,Lim yuxin,96375752,ahchin10@gmail.com,P6,Science,Thursday,Bukit Panjang primary sch.,,2026 New Students
+online,miranda,Toh Sui Ying,97543371,suiying.toh@gmail.com,Sec 1,Science,Tuesday,,Start jan. June 2026,2026 New Students
+Online,Adriel Kingsman,Marilyn Susanto,86682298,Merilyn.susanto@gmail.com,P6,Math,Monday,120,2026-09-01,Old Batch
+Online,Adriel Kingsman,Marilyn Susanto,86682298,Merilyn.susanto@gmail.com,P6,Science,Saturday,120,2026-09-01,Old Batch
+Physical,Alvin Chan,Vivian Chan,93887673,alvinchan1980@gmail.com,P6,Science,Tuesday,,Jan paid,Old Batch
+physical,Ang Chian Hui Vanessa,Ethan leong,96446055,Chianhui12@gmail.com,P6,Math,Wednesday,,nov and dec paid,Old Batch
+Online,Belinda Tan Poh Suan,Megan Yan,96963351,megan1234bel@gmail.com,P6,Math,Wednesday,,,Old Batch
+Online,Belinda Tan Poh Suan,Megan Yan,96963351,megan1234bel@gmail.com,P6,Science,Saturday,,,Old Batch
+Online,Bryan Tan (Gwen),Berwyn Tan,96935880,btxh888@gmail.com,P6,Science,Saturday,120,,Old Batch
+Online,Candace,Eva siew,97341329,candacezhou@gmail.com,P6,Science,Saturday,,2026-09-01,Old Batch
+online,Cedric Ong Jun Siang,Tan Shy Woan,91252295,jouslyntsw@gmail.com,P6,Math,Wednesday,,jan paid,Old Batch
+online,Cedric Ong Jun Siang,Tan Shy Woan,91252295,jouslyntsw@gmail.com,P6,Science,Tuesday,,jan paid,Old Batch
+Online,Christina Lim Seow Yein,Charis,90602655,charislee165@gmail.com,P6,Science,Saturday,,,Old Batch
+Physical,Chuan Ng,Adele Ng,91262728,mrngcc@gmail.com,P5,Science,Tuesday,,Jan paid,Old Batch
+online,Cui Jia (EBM),Qin zi xuan victor,98625299,cuijiafirst@gmail.com,P6,Math,Wednesday,,Feb paid,Old Batch
+online,Diana Khoo,Dan Toh,98638255,iceteacubes@gmail.com,P5,Science,Saturday,,2027-01-01,Old Batch
+online,Du Wen Juan,yuan jing tong,97913498,Yuanjingtong0826@gmail.com,P6,Science,Saturday,120,1/10/2025 (Feb need to renew),Old Batch
+Online,Edrie xie (Xie Ying Wei),Doreen Tia,,tiafogrrollercoaster@gmail.com,P6,Science,Tuesday,,Jan paid,Old Batch
+Online,Eleanor Soh,,82228070,annabellesg@gmail.com,P6,Science,Saturday,120,,Old Batch
+onLINE,Eunice Chin Lee Tyan,Wong Sheng En,93214836,eunicechinlt@gmail.com,P5,Science,Saturday,,nov and dec paid,Old Batch
+online,Faith Chandra,FENNY KUSUMA,91187821,Baby83doll@gmail.com,P4,Math,Wednesday,,,Old Batch
+online,Faith Chandra,FENNY KUSUMA,91187821,Baby83doll@gmail.com,P4,Science,Friday,,,Old Batch
+onLINE,Felicity Ngiam,Desiree Tan min En,84364986,felicityngiam@gmail.com,P6,Science,Wednesday,,jan paid,Old Batch
+Online,Francis Tan,Kaylin Tan,98428697,francisserene2421@gmail.com,P6,Science,Tuesday,,nov and dec paid,Old Batch
+online,Frederick Seng,Hui Yan,98770720,huiyan.lhy@gmail.com,P4,Science,Friday,,Jan paid,Old Batch
+Online,Grace Sim,alyssa tay,98899939,Gracesim512@gmail.com,P4,Science,Friday,,,Old Batch
+Physical,Haashini,Sundaramoorthy,90854668,anitha.smp@gmail.com,P5,Math,Thursday,,Feb paid to elsie,Old Batch
+Physical,Haashini,Sundaramoorthy,90854668,anitha.smp@gmail.com,P5,Science,Tuesday,,Feb paid to elsie,Old Batch
+online,Jace Cheng,Ng Li Hua Serene,96827129,serenenlh25@gmail.com,P6,Science,Wednesday,,Feb paid,Old Batch
+Online,Jayden Koh,Mavis Poon,96287397,mavispoon1987@gmail.com,P5,Math,Thursday,,nov and dec paid,Old Batch
+Online,Jayden Koh,Mavis Poon,96287397,mavispoon1987@gmail.com,P5,Science,Saturday,,nov and dec paid,Old Batch
+Online,Jayden Neo,Vivian Yap Hui Mei,97318231,Yhuimei@gmail.com,P6,Math,Monday,,Feb paid,Old Batch
+Online,Jayden Neo,Vivian Yap Hui Mei,97318231,Yhuimei@gmail.com,P6,Science,Wednesday,,Feb paid,Old Batch
+Online,Jayven Lin zhi qiang,Tingyi,81680162,lzqsv82@gmail.com,P5,Science,Saturday,,2026-12-01,Old Batch
+Physical,Jia yi,Jordan,96906936,Dearjiayikuo@gmail.com,P6,Science,Tuesday,,nov and dec paid,Old Batch
+Physical,Jude Tan,Jessy chua chen ling,81571107,jessychua@gmail.com,P5,Science,Tuesday,,Jan paid,Old Batch
+Physical,Kaius Lee,Adele Lim teng li,97992010,adele.ltl@gmail.com,P6,Math,Monday,,Jan paid,Old Batch
+Physical,Keith,Cherrie Yee Choon Yuong,81011165,yeecherrie2025@gmail.com,P6,Math,Wednesday,,nov and dec paid,Old Batch
+Physical,Keith,Cherrie Yee Choon Yuong,81011165,yeecherrie2025@gmail.com,P6,Science,Wednesday,,nov and dec paid,Old Batch
+Physical,Kelvin Koh hock siong,Jadon Koh,94313233,kelvinkohbh@gmail.com,P6,Math,Wednesday,,,Old Batch
+Physical,Kelvin Koh hock siong,Jadon Koh,94313233,kelvinkohbh@gmail.com,P6,Science,Saturday,,,Old Batch
+Physical,Kelvin Koh hock siong,Flavia Koh,94313233,kelvinkohbh@gmail.com,P6,Science,Tuesday,,,Old Batch
+online,Kyler Tey,Anthea Chng,97479808,Chnganthea@gmail.com,P6,Science,Tuesday,,oct to dec paid,Old Batch
+online,Kylynn Lim,Steaphy Yap Bee Min,91088637,steaphyyap86@gmail.com,P5,Science,Saturday,,Feb paid,Old Batch
+online,Kyra Goh,Joanne Lee,91289530,xdiamondthorpex@gmail.com,P5,Math,Thursday,,2026-12-01,Old Batch
+online,Kyra Goh,Joanne Lee,91289530,xdiamondthorpex@gmail.com,P5,Science,Saturday,,2026-12-01,Old Batch
+Physical,Lam Shi Wen. Koh Hock Siong,Koh Kai Jun,90307343,kohkaijun9@gmail.com,P6,Math,Wednesday,,Dec paid. jan to March 2026 paid,Old Batch
+Online,Lee Yee Jen,Goh Yuh ping,97854092,yuhpinggoh@gmail.com,P6,Math,,,2026-09-01,Old Batch
+Online,Lee Yee Jen,Goh Yuh ping,97854092,yuhpinggoh@gmail.com,P6,Science,,,2026-09-01,Old Batch
+Online,Lim Shi Qi,Ely Eng,93382733,shanicelim1134@gmail.com,P5,Science,Saturday,,2027-03-01,Old Batch
+Online,Lynelle,Sophya lim lan Shii,80404810,imim25542@gmail.com,P6,Science,Saturday,,,Old Batch
+Physical,Ma Jia Ni,Sun Yan (MA SHAO YAN),92384096,accsunyan@gmail.com,P6,Science,Wednesday,,,Old Batch
+online,Mario Lucas Ranti,Timothy ranti,97563764,jtmario@gmail.com,P6,Science,Saturday,,Feb paid,Old Batch
+physical,Meng yING XI,Ji Ling,91877023,yoyomuyu2017@gmail.com,P6,Math,,,nov and dec paid,Old Batch
+physical,Meng yING XI,Ji Ling,91877023,yoyomuyu2017@gmail.com,P6,Science,Tuesday,,nov and dec paid,Old Batch
+Online,Michelle or Kelvin Teo Tsu We,Marc Teo,96251626,marcteojx@gmail.com,P6,Science,Tuesday,,Feb paid,Old Batch
+Online,Ong Shi Theng Stephy,Ting Min XUAN oLIVIA,92375358,forolivia2015@gmail.com,P5,Science,Tuesday,,2026-12-01,Old Batch
+Online,Peck Lin (Bilin),Lionel Kwok,92706464,stuffian@gmail.com,P6,Math,Monday,,2026-09-01,Old Batch
+Online,Qi Yi,Can wee ong ka kiat,85694358,qiyi0606@gmail.com,P4,Science,Friday,,,Old Batch
+online,Sean Foo,Zeth Foo,91550120,seanfzc@gmail.com,P5,Science,Saturday,,nov and dec paid,Old Batch
+Online,Sia Soo KIM G Sharon,Ruth Ong,90055538,Sharon.oylssk@gmail.com,P5,Science,Tuesday,,Feb paid,Old Batch
+Physical,Soumiyan,Thendral Suganya,96677703,pntts1415@gmail.com,P6,Math,Wednesday,,jan paid,Old Batch
+Physical,Soumiyan,Thendral Suganya,96677703,pntts1415@gmail.com,P6,Science,Tuesday,,jan paid,Old Batch
+Online,Subramanian Devi,Krishanth,81354675,neebee200@gmail.com,P5,Math,Thursday,,Paid for jan; Nov and Dec pause,Old Batch
+online,Tan Lee Soh Sonia,Tan Su Ling Serene,94572064,serene.sl@gmail.com,P6,Science,Saturday,,paid for nov and dec too,Old Batch
+Online,Tan Yi xi,CASSIDY tAN,91911273,yixitan@gmail.com,P6,Science,Saturday,,Feb paid,Old Batch
+Online,Tanean Ailei,Elly,90221876,mattyaitan@gmail.com,P6,Science,Tuesday,,Jan to March paid,Old Batch
+Online,Tay Choon Him,Chua zhen yu,97200448,Choohim@gmail.com,P5,Science,Tuesday,,paid for nov and dec too,Old Batch
+Physical,Tristan,Ng Fang ping,96300158,ng.fangping@gmail.com,P5,Science,Tuesday,,Feb paid,Old Batch
+Physical,Velvet,Ooi Siau Fen,90257587,OOIFEN84@GMAIL.COM,P6,Math,Wednesday,,Feb paid,Old Batch
+Physical,Velvet,Ooi Siau Fen,90257587,OOIFEN84@GMAIL.COM,P6,Science,Tuesday,,Feb paid,Old Batch
+Physical,Vicky zhang Xiao Jian,Lin jia An,90688819,vickyzhangxj8848@gmail.com,P6,Math,,,paid for nov and dec too,Old Batch
+Physical,Vicky zhang Xiao Jian,Lin jia An,90688819,vickyzhangxj8848@gmail.com,P6,Science,Tuesday,,paid for nov and dec too,Old Batch
+Physical,Wendy,Sheryse,94753577,ponyofoo2014@gmail.com,P6,Science,Tuesday,,Feb paid,Old Batch
+Online,Wendy Ng,Maven Ong,93800063,missngwen@gmail.com,P6,Math,Monday,,2026-09-01,Old Batch
+Online,Wendy Ng,Maven Ong,93800063,missngwen@gmail.com,P6,Science,Tuesday,,2026-09-01,Old Batch
+Physical,Wu Qiong,Liu Wei xUAN,93657288,qiongw4@gmail.com,P6,Math,Wednesday,,Feb paid to elsie,Old Batch
+Physical,Wu Qiong,Liu Wei xUAN,93657288,qiongw4@gmail.com,P6,Science,Thursday,,Feb paid to elsie,Old Batch
+online,Yap cHEIN ning,Wayne Lee,98006652,leejianxiang@gmail.com,P5,Math,Thursday,,,Old Batch
+online,Yap cHEIN ning,Wayne Lee,98006652,leejianxiang@gmail.com,P5,Science,Tuesday,,,Old Batch
+Online,Yi xuan,Lee Yee Cheng,97539101,yeecheng917@gmail.com,P5,Math,Thursday,,2026-12-01,Old Batch
+Online,Yi xuan,Lee Yee Cheng,97539101,yeecheng917@gmail.com,P5,Science,Saturday,,2026-12-01,Old Batch
+online,Yu Tang,Nicole Xu Hao yan,80398967,nicolexiong2022@gmail.com,P6,Science,Saturday,,jan paid,Old Batch
+Online,Yvonne Yen Seetoh chin leong,Charlotte,89041644,sunzhine3007@gmail.com,P5,Science,Tuesday,,,Old Batch
+Online,Zephyr keisho haraguchi,Yoshi,98754987,yoshihiro83@gmail.com,P6,Science,Saturday,,,Old Batch
+Online,Zion Lim,Lydia Lee,91999434,zionlimze@gmail.com,P6,Science,Saturday,,2026-05-01,Old Batch
+Physical,esmeralda,Shan Shan,97271173,shanshanrivas@gmail.com,P6,Math,Wednesday,,Feb paid,Old Batch
+Physical,esmeralda,Shan Shan,97271173,shanshanrivas@gmail.com,P6,Science,Wednesday,,Feb paid,Old Batch
+Physical,evey,sally,94234109,cuttlefish74@gmail.com,P6,Science,Wednesday,,2026-12-01,Old Batch
+Physical,jasmine ong,george choo,94752875,septhlb@gmail.com,P4,Science,Friday,,nov and dec paid,Old Batch
+online,lim chai ling,Lincoln Lem,82820191,lemszeleong@gmail.com,P6,Science,Wednesday,,Feb paid,Old Batch
+Physical,linan,Leyao,91018958,linan07501@gmail.com,P6,Science,Wednesday,,Feb paid,Old Batch
+Physical,linan,Leyi,91018958,linan07501@gmail.com,P4,Science,Friday,,Feb paid; 1 trial unpaid,Old Batch
+online,oh thiam leng sean,chace oh,96219195,thiamleng@gmail.com,P5,Science,Saturday,,2026-02-01,Old Batch
+Online,Chaewon Kwak,Alessandro Bernacchia,90698075,chaewon.kk@gmail.com,P6,Math,Friday,,trial only 2025-12-05,Trial No Continue
+Online,Janelle,Stephanie Tan Soew Ling,90666260,Xiaolyn@hotmail.com,P6,Science,Tuesday,,trial only 2025-12-13,Trial No Continue
+Online,Liew Shu Yun,Loy Yong De,96567626,Ysloyysloy@gmail.com,P5,Math,Thursday,,havent pay anything,Trial No Continue
+Online,Lynette Soh Ling Hui,Emily Wee,96870410,Emilywee42@gmail.com,P6,Science,Saturday,,trial only 2025-12-02,Trial No Continue
+online,Akins Teo,Kath Lye Huay Yee,97482171,kathlyehy@gmail.com,P6,Science,Tuesday,,nov only. Dec not paid,Withdrawal
+Physical,Angelia Goh Pei Fang,Dylan Chen,97626999,chenw1155h@gmail.com,P6,Science,Tuesday,,will not continue after dec,Withdrawal
+Online,Beh Qiao En,Jessie Tai,83987308,michaelbeh81@gmail.com,P5,Math,Wednesday,,Package 2025-10-01,Withdrawal
+Online,Beh Qiao En,Jessie Tai,83987308,michaelbeh81@gmail.com,P5,Science,Wednesday,,Package 2025-10-01,Withdrawal
+Online,Candace,Eva siew,97341329,candacezhou@gmail.com,P6,Math,Monday,,yes Nov and Dec paid,Withdrawal
+Online,Darius kong,Eunice Boo,97992931,cailingsgenie@gmail.com,P5,Science,Saturday,,yes nov and dec paid. Jan onwards withdraw,Withdrawal
+online,Ghing Ghing,Zhen Yao,90231806,ghingghing.ling@gmail.com,P5,Science,Tuesday,,package jan - Oct 2025,Withdrawal
+Physical,Jessica Chiu,Emily Ho JIA MIN,93686332,emily.jiamin@gmail.com,P5,Math,Wednesday,,Jan paid,Withdrawal
+Physical,Jessica Chiu,Emily Ho JIA MIN,93686332,emily.jiamin@gmail.com,P5,Science,Tuesday,,Jan paid,Withdrawal
+Physical,Kaius Lee,Adele Lim,97992010,adele.ltl@gmail.com,P6,Science,Tuesday,,package 2025-12-01,Withdrawal
+Physical at Balmoral Plaza,Leila Liena Ijuin,Mitsuna Ijuin,96580183,Mitsunaijuin@gmail.com,P6,Math,Monday,,2025-11-11 trial only,Withdrawal
+Online,Ng Xin Hui,Choi Yoke Kiew,96348705,kiewkiew81@gmail.com,P6,Science,Saturday,,will not continue after dec,Withdrawal
+Physical,Nicole Lee,Vivian Lim,98461505,lim.vivian1212@gmail.com,P6,Math,Wednesday,,trial 2025-10-22,Withdrawal
+online,Olivia ooi,lim miow wah,96249756,Janmiowwah@gmail.com,P6,Science,Tuesday,,will not continue after dec nov and dec paid,Withdrawal
+Physical,Poe Wah Li,Zulat Nadi Lin,98396704,poewahlin@gmail.com,P5,Science,Wednesday,,Oct paid,Withdrawal
+Online,Rachel Ong,Sharon Lee,96586070,rachelongcy@gmail.com,P6,Math,Wednesday,60,package 2025-10-01,Withdrawal
+Online,Rachel Ong,Sharon Lee,96586070,rachelongcy@gmail.com,P6,Science,Saturday,60,package 2025-10-01,Withdrawal
+Online,Ryan Natt,Catherine Natt,90071209,catherinenatt@gmail.com,P4,Science,Saturday,128,package 2026-01-01,Withdrawal
+Physical,Sebastian Lin,Jasmine Tan,98362311,chiulee.tan@gmail.com,Sec 1,Science,Tuesday,,jan start,Withdrawal
+Online,Shirley Ngao Wee Ling,Triston Ng,92218510,shirleyngao@gmail.com,P6,Science,Saturday,27,will not continue after dec 2025-12-01,Withdrawal
+online,Tristan Tan,Serena kong,97680501,snowy_dew@hotmail.com,P5,Math,Monday,,Oct paid,Withdrawal
+Physical,Venetia tAN,Kegan,97604764,tangcv30@gmail.com,P6,Math,Wednesday,,wont continue nov and dec paid,Withdrawal
+online,WenQi (Lee Chi yong),Louis,96568693,wenqi1101@gmail.com,P5,Science,Tuesday,,nov and dec havent pay but will cont removed from google classroom,Withdrawal
+Physical,Yvonne Yen Seetoh chin leong,Charlotte,89041644,sunzhine3007@gmail.com,P6,Science,Tuesday,,nov and dec paid,Withdrawal
 </script>
     <!-- END CSV DATA TEMPLATES -->
 
@@ -1495,12 +1474,14 @@ Physical,Yvonne Yen Seetoh chin leong,Charlotte ,89041644,sunzhine3007@gmail.com
             };
 
             const parseMasterCSV = () => {
+                // New format: one row per subject
+                // Cols: Online/Physical, Student Name, Parent, Contact, Email, Level, Subject, Day, Fee, Expiry/Remark, Category
                 const raw = document.getElementById('csv-master').textContent.trim();
                 const lines = raw.split('\n').filter(l => l.trim().length > 0);
 
                 for (let i = 1; i < lines.length; i++) {
                     const cols = splitCSV(lines[i]);
-                    if (cols.length < 5) continue;
+                    if (cols.length < 6) continue;
 
                     const mode = (cols[0] || "Online").trim();
                     const studentName = (cols[1] || "").trim();
@@ -1508,41 +1489,13 @@ Physical,Yvonne Yen Seetoh chin leong,Charlotte ,89041644,sunzhine3007@gmail.com
                     const contact = (cols[3] || "").trim();
                     const email = (cols[4] || "").trim();
                     const rawLevel = (cols[5] || "").trim();
-                    const mathDay = (cols[6] || "").trim();
-                    const sciDay = (cols[7] || "").trim();
+                    const subjectName = (cols[6] || "").trim();
+                    const day = (cols[7] || "").trim();
                     const feeOrNote = (cols[8] || "").trim();
                     const expiryRemark = (cols[9] || "").trim();
                     const category = (cols[10] || "").trim();
 
                     if (!studentName) continue;
-
-                    // Package rows: col1=identifier, col5=subject desc, col8=fee
-                    if (category === 'Package') {
-                        const fee = parseFloat(feeOrNote) || 0;
-                        if (fee > 0) {
-                            const outside = studentName.replace(/\(.*?\)/g, '').trim().toLowerCase();
-                            const inParens = (studentName.match(/\(([^)]+)\)/) || [])[1] || '';
-                            let match = null;
-                            for (let [k, val] of familyMap) {
-                                const pn = val.parentName.toLowerCase();
-                                if ((outside && pn.includes(outside)) || (inParens && pn.includes(inParens.toLowerCase()))) {
-                                    match = val; break;
-                                }
-                            }
-                            if (match) {
-                                match.paymentNote = `Package: ${expiryRemark}`;
-                                match.remarks = (match.remarks ? match.remarks + ' | ' : '') + `Pkg: $${fee} for ${rawLevel}`;
-                                match.isPackage = true;
-                            } else {
-                                const fam = getOrCreateFamily(studentName, studentName, "", "");
-                                fam.paymentNote = `Package: ${expiryRemark}`;
-                                fam.isPackage = true;
-                                fam.remarks = `Pkg: $${fee} for ${rawLevel}`;
-                                fam.children.push({ name: "Student (Package)", level: "", subjects: [{ name: rawLevel || "Package Tuition", mode: "Package", timeDay: '', fee: fee }] });
-                            }
-                        }
-                        continue;
-                    }
 
                     const studentLevel = rawLevel.replace(/primary /gi, 'P').replace(/^sec\s*1$/i, 'Sec 1').replace(/^sec1$/i, 'Sec 1');
                     const key = contact.replace(/\D/g, '') || parentName;
@@ -1550,7 +1503,7 @@ Physical,Yvonne Yen Seetoh chin leong,Charlotte ,89041644,sunzhine3007@gmail.com
 
                     const remarkLower = expiryRemark.toLowerCase();
 
-                    if (remarkLower.includes('paid')) { fam.paid = true; fam.paymentNote = expiryRemark; }
+                    if (remarkLower.includes('paid')) { fam.paid = true; if (!fam.paymentNote) fam.paymentNote = expiryRemark; }
 
                     // ISO date expiry → package
                     if (expiryRemark.match(/^\d{4}-\d{2}-\d{2}$/)) {
@@ -1565,37 +1518,41 @@ Physical,Yvonne Yen Seetoh chin leong,Charlotte ,89041644,sunzhine3007@gmail.com
                         if (!fam.remarks.includes('[WITHDRAWN]')) fam.remarks = (fam.remarks ? fam.remarks + ' ' : '') + '[WITHDRAWN]';
                     }
 
-                    const explicitFee = parseFloat(feeOrNote) || 0;
                     const schoolNote = feeOrNote && isNaN(parseFloat(feeOrNote)) ? feeOrNote : '';
-                    if (schoolNote) fam.remarks = (fam.remarks ? fam.remarks + ' | ' : '') + schoolNote;
+                    if (schoolNote && !fam.remarks.includes(schoolNote)) fam.remarks = (fam.remarks ? fam.remarks + ' | ' : '') + schoolNote;
 
-                    const subjectDefaultRate = getRate(studentLevel, mode);
-                    const subjects = [];
-
-                    const processSubject = (subject, day) => {
-                        if (!day || day.toLowerCase() === 'xx') return;
-                        const dayStr = day.includes('(') ? day.substring(0, day.indexOf('(')).trim() : day.trim();
-                        const matchingSlot = SCHEDULE_DATA.find(slot =>
-                            slot.day.toLowerCase().startsWith(dayStr.toLowerCase().substring(0, 3)) &&
-                            slot.subject.toLowerCase() === subject.toLowerCase() &&
-                            slot.level.toLowerCase() === studentLevel.toLowerCase()
-                        );
-                        if (matchingSlot) {
-                            subjects.push({ name: subject, mode: mode, timeDay: `${matchingSlot.day}, ${matchingSlot.time} - ${matchingSlot.type} - ${matchingSlot.level} ${matchingSlot.subject}`, fee: subjectDefaultRate });
-                        } else {
-                            subjects.push({ name: `${subject} (Unscheduled)`, mode: mode, timeDay: '', fee: subjectDefaultRate });
-                        }
-                    };
-
-                    if (explicitFee > 0) {
-                        subjects.push({ name: "Tuition Fee (Override)", mode: mode, timeDay: '', fee: explicitFee });
-                    } else {
-                        if (mathDay && mathDay.toLowerCase() !== 'xx') processSubject("Math", mathDay);
-                        if (sciDay && sciDay.toLowerCase() !== 'xx') processSubject("Science", sciDay);
-                        if (subjects.length === 0) subjects.push({ name: "General Tuition", mode: mode, timeDay: '', fee: subjectDefaultRate });
+                    // Find or create child entry for this student+level
+                    let child = fam.children.find(c =>
+                        c.name.toLowerCase() === studentName.toLowerCase() && c.level === studentLevel
+                    );
+                    if (!child) {
+                        child = { name: studentName, level: studentLevel, subjects: [] };
+                        fam.children.push(child);
                     }
 
-                    fam.children.push({ name: studentName, level: studentLevel, subjects: subjects });
+                    // Add subject for this row if day is valid
+                    const cleanDay = day.toLowerCase() === 'xx' || !day ? '' : day.trim();
+                    if (subjectName && cleanDay) {
+                        const cleanMode = mode.toLowerCase().includes('online') ? 'Online' : 'Physical';
+                        const dayStr = cleanDay.includes('(') ? cleanDay.substring(0, cleanDay.indexOf('(')).trim() : cleanDay;
+                        const explicitFee = parseFloat(feeOrNote) || 0;
+                        const defaultRate = getRate(studentLevel, cleanMode);
+                        const fee = explicitFee > 0 ? explicitFee : defaultRate;
+
+                        const matchingSlot = SCHEDULE_DATA.find(slot =>
+                            slot.day.toLowerCase().startsWith(dayStr.toLowerCase().substring(0, 3)) &&
+                            slot.subject.toLowerCase() === subjectName.toLowerCase() &&
+                            slot.level.toLowerCase() === studentLevel.toLowerCase()
+                        );
+                        const timeDay = matchingSlot
+                            ? `${matchingSlot.day}, ${matchingSlot.time} - ${matchingSlot.type} - ${matchingSlot.level} ${matchingSlot.subject}`
+                            : cleanDay;
+
+                        const alreadyHas = child.subjects.some(s => s.name.toLowerCase() === subjectName.toLowerCase());
+                        if (!alreadyHas) {
+                            child.subjects.push({ name: subjectName, mode: cleanMode, timeDay, fee });
+                        }
+                    }
                 }
             };
 
