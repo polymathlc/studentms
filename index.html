@@ -3165,6 +3165,7 @@ online,Lim Shi Qi,Ely Eng,93382733,shanicelim1134@gmail.com,P5,,Saturday,1633.92
         const firebaseConfig = {
             apiKey: "AIzaSyAUSI3Uh28IeqASEp0JhH4QPaVt-O3meBo",
             authDomain: "mathgen--app.firebaseapp.com",
+            databaseURL: "https://mathgen--app-default-rtdb.firebaseio.com",
             projectId: "mathgen--app",
             storageBucket: "mathgen--app.firebasestorage.app",
             messagingSenderId: "165654161198",
@@ -3214,6 +3215,8 @@ online,Lim Shi Qi,Ely Eng,93382733,shanicelim1134@gmail.com,P5,,Saturday,1633.92
             const btn = document.getElementById('google-sign-in-btn');
             if (user) {
                 if (user.email === ALLOWED_EMAIL) {
+                    btn.disabled = false;
+                    btn.innerHTML = GOOGLE_ICON_HTML;
                     if (!appInitialized) {
                         window.db.ref('/').once('value').then(snapshot => {
                             const data = snapshot.val() || {};
