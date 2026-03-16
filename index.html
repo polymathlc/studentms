@@ -3197,13 +3197,32 @@ online,Lim Shi Qi,Ely Eng,93382733,shanicelim1134@gmail.com,P5,,Saturday,1633.92
             errorMsg.classList.add('hidden');
             const provider = new firebase.auth.GoogleAuthProvider();
             provider.setCustomParameters({ login_hint: ALLOWED_EMAIL });
-            auth.signInWithPopup(provider).catch(err => {
+            auth.signInWithPopup(provider).then(result => {
+                // Success handled by onAuthStateChanged
+            }).catch(err => {
+                // If popup blocked or failed, fall back to redirect
+                if (err.code === 'auth/popup-blocked' || err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') {
+                    auth.signInWithRedirect(provider);
+                    return;
+                }
                 btn.disabled = false;
                 btn.innerHTML = GOOGLE_ICON_HTML;
-                errorMsg.textContent = 'Sign-in failed. Please try again.';
+                errorMsg.textContent = 'Sign-in failed: ' + err.message;
                 errorMsg.classList.remove('hidden');
             });
         }
+
+        // Handle redirect result on page load (for when signInWithRedirect was used)
+        auth.getRedirectResult().catch(err => {
+            if (err.code) {
+                const errorMsg = document.getElementById('auth-error-msg');
+                const btn = document.getElementById('google-sign-in-btn');
+                btn.disabled = false;
+                btn.innerHTML = GOOGLE_ICON_HTML;
+                errorMsg.textContent = 'Sign-in failed: ' + err.message;
+                errorMsg.classList.remove('hidden');
+            }
+        });
 
         function signOutUser() {
             auth.signOut();
@@ -3218,9 +3237,33 @@ online,Lim Shi Qi,Ely Eng,93382733,shanicelim1134@gmail.com,P5,,Saturday,1633.92
                     btn.disabled = false;
                     btn.innerHTML = GOOGLE_ICON_HTML;
                     if (!appInitialized) {
+                        // Add a timeout so the login screen doesn't hang forever
+                        const dbTimeout = setTimeout(() => {
+                            console.warn("Firebase DB fetch timed out. Using local data.");
+                            if (appInitialized) return;
+
+                            const saved = localStorage.getItem('tuition_families_v6');
+                            if (saved && saved !== '[]') {
+                                families = JSON.parse(saved);
+                            } else {
+                                parseAllCSVData();
+                            }
+
+                            const savedSet = localStorage.getItem('appSettings');
+                            if (savedSet) {
+                                appSettings = JSON.parse(savedSet);
+                            }
+
+                            try { initializeAppAfterData(); } catch(e) { console.error("Init error:", e); }
+                            loginScreen.classList.add('hidden');
+                            appInitialized = true;
+                        }, 10000);
+
                         window.db.ref('/').once('value').then(snapshot => {
+                            clearTimeout(dbTimeout);
+                            if (appInitialized) return;
                             const data = snapshot.val() || {};
-                            
+
                             // 1. Families Data
                             if (data.tuition_families_v6) {
                                 families = JSON.parse(data.tuition_families_v6);
@@ -3229,8 +3272,8 @@ online,Lim Shi Qi,Ely Eng,93382733,shanicelim1134@gmail.com,P5,,Saturday,1633.92
                                     if (f.worksheetOrdered === undefined) f.worksheetOrdered = false;
                                     if (f.isPackage === undefined) f.isPackage = false;
                                     if (f.packageEndDate === undefined) f.packageEndDate = null;
-                                    if (f.isTrial === undefined) f.isTrial = false; 
-                                    if (f.bankAccountName === undefined) f.bankAccountName = ""; 
+                                    if (f.isTrial === undefined) f.isTrial = false;
+                                    if (f.bankAccountName === undefined) f.bankAccountName = "";
                                     if (f.sec1OnlineRate === undefined) f.sec1OnlineRate = 140;
                                     if (f.sec1PhysicalRate === undefined) f.sec1PhysicalRate = 170;
                                 });
@@ -3240,11 +3283,11 @@ online,Lim Shi Qi,Ely Eng,93382733,shanicelim1134@gmail.com,P5,,Saturday,1633.92
                                 if (saved && saved !== '[]') {
                                     families = JSON.parse(saved);
                                 } else {
-                                    parseAllCSVData(); 
+                                    parseAllCSVData();
                                 }
                                 window.db.ref('tuition_families_v6').set(JSON.stringify(families)).catch(err => console.error(err));
                             }
-                            
+
                             // 2. Settings Data
                             if (data.appSettings) {
                                 appSettings = JSON.parse(data.appSettings);
@@ -3255,27 +3298,28 @@ online,Lim Shi Qi,Ely Eng,93382733,shanicelim1134@gmail.com,P5,,Saturday,1633.92
                                 }
                                 window.db.ref('appSettings').set(JSON.stringify(appSettings)).catch(err => console.error(err));
                             }
-                            
-                            initializeAppAfterData();
+
+                            try { initializeAppAfterData(); } catch(e) { console.error("Init error:", e); }
                             loginScreen.classList.add('hidden');
                             appInitialized = true;
                         }).catch(err => {
+                            clearTimeout(dbTimeout);
+                            if (appInitialized) return;
                             console.error("Firebase DB fetch error:", err);
-                            alert("Failed to sync with database. Using local data.");
-                            
+
                             const saved = localStorage.getItem('tuition_families_v6');
                             if (saved && saved !== '[]') {
                                 families = JSON.parse(saved);
                             } else {
                                 parseAllCSVData();
                             }
-                            
+
                             const savedSet = localStorage.getItem('appSettings');
                             if (savedSet) {
                                 appSettings = JSON.parse(savedSet);
                             }
-                            
-                            initializeAppAfterData();
+
+                            try { initializeAppAfterData(); } catch(e) { console.error("Init error:", e); }
                             loginScreen.classList.add('hidden');
                             appInitialized = true;
                         });
