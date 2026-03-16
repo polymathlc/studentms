@@ -10,7 +10,6 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 
     <style>
@@ -344,22 +343,20 @@ online,Lim Shi Qi,Ely Eng,93382733,shanicelim1134@gmail.com,P5,,Saturday,1633.92
                     </svg>
                 </div>
                 <h2 class="text-2xl font-bold text-gray-900">Tuition Manager</h2>
-                <p class="text-gray-500 mt-1 text-sm">Sign in to access the system</p>
+                <p class="text-gray-500 mt-1 text-sm">Enter password to access the system</p>
             </div>
-            <button id="google-sign-in-btn" onclick="signInWithGoogle()"
-                class="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-200 hover:border-indigo-400 hover:bg-indigo-50 text-gray-700 font-medium py-3 px-4 rounded-xl transition-all shadow-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 flex-shrink-0" viewBox="0 0 48 48">
-                    <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
-                    <path fill="#FF3D00" d="m6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C16.318 4 9.656 8.337 6.306 14.691z"/>
-                    <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
-                    <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
-                </svg>
-                Sign in with Google
-            </button>
+            <form id="password-form" onsubmit="handlePasswordLogin(event)">
+                <input id="password-input" type="password" placeholder="Password"
+                    class="w-full border-2 border-gray-200 focus:border-indigo-400 focus:outline-none text-gray-700 font-medium py-3 px-4 rounded-xl transition-all mb-3" autofocus>
+                <button type="submit" id="login-btn"
+                    class="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-xl transition-all shadow-sm">
+                    Sign in
+                </button>
+            </form>
             <p id="auth-error-msg" class="mt-4 text-sm text-red-600 hidden"></p>
         </div>
     </div>
-    <!-- END FIREBASE LOGIN SCREEN -->
+    <!-- END LOGIN SCREEN -->
 
     <header class="bg-indigo-600 text-white shadow-lg sticky top-0 z-30 flex-none">
         <div class="px-4 py-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
@@ -3160,7 +3157,7 @@ online,Lim Shi Qi,Ely Eng,93382733,shanicelim1134@gmail.com,P5,,Saturday,1633.92
         }
     </script>
 
-    <!-- FIREBASE AUTH -->
+    <!-- APP AUTH & DATA INIT -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyAUSI3Uh28IeqASEp0JhH4QPaVt-O3meBo",
@@ -3174,172 +3171,127 @@ online,Lim Shi Qi,Ely Eng,93382733,shanicelim1134@gmail.com,P5,,Saturday,1633.92
         };
 
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const ALLOWED_EMAIL = 'chungzhikai@gmail.com';
-        
         window.db = firebase.database();
         let appInitialized = false;
+        const APP_PASSWORD = 'plc123';
 
-        const GOOGLE_ICON_HTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 flex-shrink-0" viewBox="0 0 48 48">
-                <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
-                <path fill="#FF3D00" d="m6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C16.318 4 9.656 8.337 6.306 14.691z"/>
-                <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
-                <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
-            </svg>
-            Sign in with Google`;
-
-        function signInWithGoogle() {
-            const btn = document.getElementById('google-sign-in-btn');
+        function handlePasswordLogin(e) {
+            e.preventDefault();
+            const input = document.getElementById('password-input');
             const errorMsg = document.getElementById('auth-error-msg');
-            btn.disabled = true;
-            btn.innerHTML = '<svg class="animate-spin w-5 h-5 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg> Signing in...';
-            errorMsg.classList.add('hidden');
-            const provider = new firebase.auth.GoogleAuthProvider();
-            provider.setCustomParameters({ login_hint: ALLOWED_EMAIL });
-            auth.signInWithPopup(provider).then(result => {
-                // Success handled by onAuthStateChanged
-            }).catch(err => {
-                // If popup blocked or failed, fall back to redirect
-                if (err.code === 'auth/popup-blocked' || err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') {
-                    auth.signInWithRedirect(provider);
-                    return;
-                }
-                btn.disabled = false;
-                btn.innerHTML = GOOGLE_ICON_HTML;
-                errorMsg.textContent = 'Sign-in failed: ' + err.message;
+            const btn = document.getElementById('login-btn');
+
+            if (input.value === APP_PASSWORD) {
+                errorMsg.classList.add('hidden');
+                btn.disabled = true;
+                btn.textContent = 'Signing in...';
+                sessionStorage.setItem('tuition_auth', 'true');
+                loadAppData();
+            } else {
+                errorMsg.textContent = 'Incorrect password. Please try again.';
                 errorMsg.classList.remove('hidden');
+                input.value = '';
+                input.focus();
+            }
+        }
+
+        function signOutUser() {
+            sessionStorage.removeItem('tuition_auth');
+            appInitialized = false;
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('password-input').value = '';
+            document.getElementById('login-btn').disabled = false;
+            document.getElementById('login-btn').textContent = 'Sign in';
+            document.getElementById('auth-error-msg').classList.add('hidden');
+        }
+
+        function loadAppData() {
+            const loginScreen = document.getElementById('login-screen');
+
+            if (appInitialized) {
+                loginScreen.classList.add('hidden');
+                return;
+            }
+
+            const dbTimeout = setTimeout(() => {
+                if (appInitialized) return;
+                console.warn("Firebase DB fetch timed out. Using local data.");
+                loadLocalData();
+                try { initializeAppAfterData(); } catch(e) { console.error("Init error:", e); }
+                loginScreen.classList.add('hidden');
+                appInitialized = true;
+            }, 10000);
+
+            window.db.ref('/').once('value').then(snapshot => {
+                clearTimeout(dbTimeout);
+                if (appInitialized) return;
+                const data = snapshot.val() || {};
+
+                // 1. Families Data
+                if (data.tuition_families_v6) {
+                    families = JSON.parse(data.tuition_families_v6);
+                    families.forEach(f => {
+                        if (f.worksheetOrdered === undefined) f.worksheetOrdered = false;
+                        if (f.isPackage === undefined) f.isPackage = false;
+                        if (f.packageEndDate === undefined) f.packageEndDate = null;
+                        if (f.isTrial === undefined) f.isTrial = false;
+                        if (f.bankAccountName === undefined) f.bankAccountName = "";
+                        if (f.sec1OnlineRate === undefined) f.sec1OnlineRate = 140;
+                        if (f.sec1PhysicalRate === undefined) f.sec1PhysicalRate = 170;
+                    });
+                } else {
+                    const saved = localStorage.getItem('tuition_families_v6');
+                    if (saved && saved !== '[]') {
+                        families = JSON.parse(saved);
+                    } else {
+                        parseAllCSVData();
+                    }
+                    window.db.ref('tuition_families_v6').set(JSON.stringify(families)).catch(err => console.error(err));
+                }
+
+                // 2. Settings Data
+                if (data.appSettings) {
+                    appSettings = JSON.parse(data.appSettings);
+                } else {
+                    const savedSet = localStorage.getItem('appSettings');
+                    if (savedSet) {
+                        appSettings = JSON.parse(savedSet);
+                    }
+                    window.db.ref('appSettings').set(JSON.stringify(appSettings)).catch(err => console.error(err));
+                }
+
+                try { initializeAppAfterData(); } catch(e) { console.error("Init error:", e); }
+                loginScreen.classList.add('hidden');
+                appInitialized = true;
+            }).catch(err => {
+                clearTimeout(dbTimeout);
+                if (appInitialized) return;
+                console.error("Firebase DB fetch error:", err);
+                loadLocalData();
+                try { initializeAppAfterData(); } catch(e) { console.error("Init error:", e); }
+                loginScreen.classList.add('hidden');
+                appInitialized = true;
             });
         }
 
-        // Handle redirect result on page load (for when signInWithRedirect was used)
-        auth.getRedirectResult().catch(err => {
-            if (err.code) {
-                const errorMsg = document.getElementById('auth-error-msg');
-                const btn = document.getElementById('google-sign-in-btn');
-                btn.disabled = false;
-                btn.innerHTML = GOOGLE_ICON_HTML;
-                errorMsg.textContent = 'Sign-in failed: ' + err.message;
-                errorMsg.classList.remove('hidden');
+        function loadLocalData() {
+            const saved = localStorage.getItem('tuition_families_v6');
+            if (saved && saved !== '[]') {
+                families = JSON.parse(saved);
+            } else {
+                parseAllCSVData();
             }
-        });
-
-        function signOutUser() {
-            auth.signOut();
+            const savedSet = localStorage.getItem('appSettings');
+            if (savedSet) {
+                appSettings = JSON.parse(savedSet);
+            }
         }
 
-        auth.onAuthStateChanged(user => {
-            const loginScreen = document.getElementById('login-screen');
-            const errorMsg = document.getElementById('auth-error-msg');
-            const btn = document.getElementById('google-sign-in-btn');
-            if (user) {
-                if (user.email === ALLOWED_EMAIL) {
-                    btn.disabled = false;
-                    btn.innerHTML = GOOGLE_ICON_HTML;
-                    if (!appInitialized) {
-                        // Add a timeout so the login screen doesn't hang forever
-                        const dbTimeout = setTimeout(() => {
-                            console.warn("Firebase DB fetch timed out. Using local data.");
-                            if (appInitialized) return;
-
-                            const saved = localStorage.getItem('tuition_families_v6');
-                            if (saved && saved !== '[]') {
-                                families = JSON.parse(saved);
-                            } else {
-                                parseAllCSVData();
-                            }
-
-                            const savedSet = localStorage.getItem('appSettings');
-                            if (savedSet) {
-                                appSettings = JSON.parse(savedSet);
-                            }
-
-                            try { initializeAppAfterData(); } catch(e) { console.error("Init error:", e); }
-                            loginScreen.classList.add('hidden');
-                            appInitialized = true;
-                        }, 10000);
-
-                        window.db.ref('/').once('value').then(snapshot => {
-                            clearTimeout(dbTimeout);
-                            if (appInitialized) return;
-                            const data = snapshot.val() || {};
-
-                            // 1. Families Data
-                            if (data.tuition_families_v6) {
-                                families = JSON.parse(data.tuition_families_v6);
-                                // Ensure backward compatibility
-                                families.forEach(f => {
-                                    if (f.worksheetOrdered === undefined) f.worksheetOrdered = false;
-                                    if (f.isPackage === undefined) f.isPackage = false;
-                                    if (f.packageEndDate === undefined) f.packageEndDate = null;
-                                    if (f.isTrial === undefined) f.isTrial = false;
-                                    if (f.bankAccountName === undefined) f.bankAccountName = "";
-                                    if (f.sec1OnlineRate === undefined) f.sec1OnlineRate = 140;
-                                    if (f.sec1PhysicalRate === undefined) f.sec1PhysicalRate = 170;
-                                });
-                            } else {
-                                // Fallback to local
-                                const saved = localStorage.getItem('tuition_families_v6');
-                                if (saved && saved !== '[]') {
-                                    families = JSON.parse(saved);
-                                } else {
-                                    parseAllCSVData();
-                                }
-                                window.db.ref('tuition_families_v6').set(JSON.stringify(families)).catch(err => console.error(err));
-                            }
-
-                            // 2. Settings Data
-                            if (data.appSettings) {
-                                appSettings = JSON.parse(data.appSettings);
-                            } else {
-                                const savedSet = localStorage.getItem('appSettings');
-                                if (savedSet) {
-                                    appSettings = JSON.parse(savedSet);
-                                }
-                                window.db.ref('appSettings').set(JSON.stringify(appSettings)).catch(err => console.error(err));
-                            }
-
-                            try { initializeAppAfterData(); } catch(e) { console.error("Init error:", e); }
-                            loginScreen.classList.add('hidden');
-                            appInitialized = true;
-                        }).catch(err => {
-                            clearTimeout(dbTimeout);
-                            if (appInitialized) return;
-                            console.error("Firebase DB fetch error:", err);
-
-                            const saved = localStorage.getItem('tuition_families_v6');
-                            if (saved && saved !== '[]') {
-                                families = JSON.parse(saved);
-                            } else {
-                                parseAllCSVData();
-                            }
-
-                            const savedSet = localStorage.getItem('appSettings');
-                            if (savedSet) {
-                                appSettings = JSON.parse(savedSet);
-                            }
-
-                            try { initializeAppAfterData(); } catch(e) { console.error("Init error:", e); }
-                            loginScreen.classList.add('hidden');
-                            appInitialized = true;
-                        });
-                    } else {
-                        loginScreen.classList.add('hidden');
-                    }
-                } else {
-                    // Wrong account — sign them out immediately
-                    auth.signOut();
-                    errorMsg.textContent = `Access denied: ${user.email} is not authorised to use this system.`;
-                    errorMsg.classList.remove('hidden');
-                    btn.disabled = false;
-                    btn.innerHTML = GOOGLE_ICON_HTML;
-                    loginScreen.classList.remove('hidden');
-                }
-            } else {
-                loginScreen.classList.remove('hidden');
-            }
-        });
+        // Auto-login if already authenticated in this session
+        if (sessionStorage.getItem('tuition_auth') === 'true') {
+            loadAppData();
+        }
     </script>
-    <!-- END FIREBASE AUTH -->
+    <!-- END APP AUTH & DATA INIT -->
 </body>
 </html>
