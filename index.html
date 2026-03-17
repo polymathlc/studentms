@@ -1214,7 +1214,10 @@ online,Lim Shi Qi,Ely Eng,93382733,shanicelim1134@gmail.com,P5,,Saturday,1633.92
                                     <div class="font-semibold text-sm text-gray-800">${f.parentName}</div>
                                     <div class="text-xs text-gray-600">${matchingSubjects}</div>
                                 </div>
-                                <button onclick="openStudentAccount(${f.id})" class="text-indigo-600 hover:text-indigo-800 text-xs">View/Edit</button>
+                                <div class="flex items-center gap-2">
+                                    ${f.contact ? `<button onclick="openWhatsAppChat(${f.id})" class="p-1.5 bg-green-500 hover:bg-green-600 text-white rounded-md transition-colors" title="Open WhatsApp Chat"><i data-lucide="message-circle" class="w-3.5 h-3.5"></i></button>` : ''}
+                                    <button onclick="openStudentAccount(${f.id})" class="text-indigo-600 hover:text-indigo-800 text-xs">View/Edit</button>
+                                </div>
                             </div>
                         `;
                     });
@@ -2302,11 +2305,11 @@ online,Lim Shi Qi,Ely Eng,93382733,shanicelim1134@gmail.com,P5,,Saturday,1633.92
                     <td class="p-4 text-right">
                         <div class="flex flex-col gap-2 items-end">
                             <div class="flex gap-2 w-full">
-                                <button onclick="openQrModal(${f.id}, true)" class="p-2 bg-green-500 hover:bg-green-600 text-white rounded-md transition-colors shadow-sm flex-1 flex justify-center gap-1 text-xs font-bold items-center" title="Send WhatsApp">
+                                <button onclick="openWhatsAppChat(${f.id})" class="p-2 bg-green-500 hover:bg-green-600 text-white rounded-md transition-colors shadow-sm flex-1 flex justify-center gap-1 text-xs font-bold items-center" title="Open WhatsApp Chat">
                                     <i data-lucide="message-circle" class="w-4 h-4"></i> WhatsApp
                                 </button>
-                                <button onclick="openQrModal(${f.id}, false)" class="p-2 text-white bg-indigo-600 hover:bg-indigo-700 rounded-md transition-colors shadow-sm flex-none flex justify-center gap-1 text-xs font-bold items-center" title="Generate Invoice">
-                                    <i data-lucide="receipt" class="w-4 h-4"></i>
+                                <button onclick="openQrModal(${f.id}, false)" class="p-2 text-white bg-indigo-600 hover:bg-indigo-700 rounded-md transition-colors shadow-sm flex-none flex justify-center gap-1 text-xs font-bold items-center" title="Send Invoice">
+                                    <i data-lucide="receipt" class="w-4 h-4"></i> Invoice
                                 </button>
                             </div>
                             <div class="flex gap-2 w-full justify-end">
@@ -2888,6 +2891,16 @@ online,Lim Shi Qi,Ely Eng,93382733,shanicelim1134@gmail.com,P5,,Saturday,1633.92
                     ctx.fillText(`Bank Name: ${appSettings.bankAccountName}`, width/2, y);
                     y += 20;
                 }
+            }
+        }
+
+        // Function to open WhatsApp chat directly with parent's number (no invoice)
+        function openWhatsAppChat(id) {
+            const family = families.find(f => f.id === id);
+            if (!family || !family.contact) return;
+            const num = formatWaNumber(family.contact);
+            if (num) {
+                window.open(`https://wa.me/${num}`, '_blank');
             }
         }
 
